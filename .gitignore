@@ -416,3 +416,87 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# ──────────────────────────────────────────────────────────────
+#  JetBrains Rider (+ IntelliJ base)
+# ──────────────────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Rider específico
+.idea/.idea.*/
+**/.idea/
+*.DotSettings.user
+
+# Rider shelf (changes guardadas localmente)
+.shelf/
+
+# Rider scratches e consoles locais
+.idea/scratches/
+.idea/httpRequests/
+
+# Rider run configurations locais
+.idea/runConfigurations/
+
+# ──────────────────────────────────────────────────────────────
+#  Visual Studio / VS Code (bônus)
+# ──────────────────────────────────────────────────────────────
+.vs/
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+*.VC.db
+*.VC.VC.opendb
+
+# ──────────────────────────────────────────────────────────────
+#  Node.js / React / Vite / Next.js
+# ──────────────────────────────────────────────────────────────
+
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.nuxt/
+.output/
+.vercel/
+.netlify/
+
+# Cache
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+
+# Vite
+vite.config.ts.timestamp-*
+vite.config.js.timestamp-*
+
+# Env files
+.env
+.env.*
+!.env.example
+!.env.development.local.example
+
+# Coverage (frontend)
+coverage/
+lcov.info
+*.lcov
+
+# Storybook
+storybook-static/
+
+# PWA / Service Workers gerados
+sw.js
+workbox-*.js
