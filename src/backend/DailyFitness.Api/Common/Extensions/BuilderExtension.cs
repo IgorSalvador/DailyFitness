@@ -1,4 +1,4 @@
-﻿namespace DailyFitness.Api.Common.Api;
+﻿namespace DailyFitness.Api.Common.Extensions;
 
 public static class BuilderExtension
 {
@@ -20,6 +20,13 @@ public static class BuilderExtension
         public void AddDocumentation()
         {
             builder.Services.AddOpenApi();
+        }
+
+        public void AddLogging()
+        {
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
         }
     }
 }

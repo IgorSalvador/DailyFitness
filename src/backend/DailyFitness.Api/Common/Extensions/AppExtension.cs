@@ -1,6 +1,7 @@
-﻿using Scalar.AspNetCore;
+﻿using DailyFitness.Api.Middleware;
+using Scalar.AspNetCore;
 
-namespace DailyFitness.Api.Common.Api;
+namespace DailyFitness.Api.Common.Extensions;
 
 public static class AppExtension
 {
@@ -25,6 +26,11 @@ public static class AppExtension
         public void UseCrossOrigin()
         {
             app.UseCors(ApiConfiguration.CorsPolicyName);
+        }
+
+        public void UseGlobalExceptionHandler()
+        {
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
         }
     }
 }
