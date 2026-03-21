@@ -500,3 +500,43 @@ storybook-static/
 # PWA / Service Workers gerados
 sw.js
 workbox-*.js
+
+# Angular / Node
+node_modules/
+dist/
+.angular/
+.cache/
+coverage/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files locais
+src/environments/*.local.ts
+src/environments/*.dev.ts
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+tmp/
+temp/
+*.tmp
+*.swp
+
+# Test outputs
+test-results/
+playwright-report/
+
+# Package manager
+package-lock.json.bak
+yarn.lock.bak
+pnpm-lock.yaml.bak
