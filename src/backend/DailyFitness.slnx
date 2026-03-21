@@ -1,2 +1,6 @@
 <Solution>
+  <Project Path="DailyFitness.Api/DailyFitness.Api.csproj" />
+  <Project Path="DailyFitness.Application/DailyFitness.Application.csproj" />
+  <Project Path="DailyFitness.Domain/DailyFitness.Domain.csproj" />
+  <Project Path="DailyFitness.Infrastructure/DailyFitness.Infrastructure.csproj" />
 </Solution>
