@@ -11,7 +11,6 @@ public static class ResultDtoExtension
         if (result.Success)
             return controller.Ok(new SuccessResult<T>(true, result.Message, result.Data));
 
-
         return controller.BadRequest(new ErrorResult(false, result.Message, result.Errors));
     }
 }

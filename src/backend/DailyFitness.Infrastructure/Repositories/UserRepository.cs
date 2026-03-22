@@ -9,6 +9,6 @@ public class UserRepository(AppDbContext context) : Repository<User>(context), I
 {
     public async Task<bool> GetIfAlreadyExist(string email)
     {
-        return await set.AnyAsync(x => x.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+        return await set.AnyAsync(x => x.Email.ToLower() == email.ToLower());
     }
 }
