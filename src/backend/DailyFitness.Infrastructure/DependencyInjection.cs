@@ -1,4 +1,8 @@
-﻿using DailyFitness.Infrastructure.Persistence;
+﻿using DailyFitness.Application.Interfaces.Repositories;
+using DailyFitness.Application.Interfaces.Security;
+using DailyFitness.Infrastructure.Persistence;
+using DailyFitness.Infrastructure.Repositories;
+using DailyFitness.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,13 +13,11 @@ public static class DependencyInjection
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddInfrastructure(IConfiguration configuration)
+        public void AddInfrastructure(IConfiguration configuration)
         {
             services.AddContext(configuration);
             services.AddServices();
             services.AddRepositories();
-
-            return services;
         }
 
         private void AddContext(IConfiguration configuration)
@@ -33,12 +35,13 @@ public static class DependencyInjection
 
         private void AddServices()
         {
-            // Todo -> Add Future services
+            services.AddScoped<IPasswordHasherService, PasswordHasherService>();
         }
 
         private void AddRepositories()
         {
-            // Todo -> Add Future repositories
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IUserRepository, UserRepository>();
         }
     }
 }

@@ -1,0 +1,34 @@
+﻿using DailyFitness.Domain.Common;
+using DailyFitness.Domain.Enums;
+
+namespace DailyFitness.Domain.Entities;
+
+public class User : Entity
+{
+    public string Email { get; private set; }
+    public string PasswordHash { get; private set; }
+    public string FirstName { get; private set; }
+    public string Surname { get; private set; }
+    public EUserProfile Profile { get; private set; }
+    public DateTime? LastLoginAt { get; private set; }
+
+    public User(string email, string passwordHash, string firstName, string surname, EUserProfile profile = EUserProfile.General)
+    {
+        Email = email;
+        PasswordHash = passwordHash;
+        FirstName = firstName;
+        Surname = surname;
+        Profile = profile;
+    }
+
+    public void Update(string email, string firstName, string surname)
+    {
+        Email = email;
+        FirstName = firstName;
+        Surname = surname;
+    }
+
+    public void UpdateLastLoginAt() => LastLoginAt = DateTime.Now;
+
+    public void UpdateProfile(EUserProfile profile) => Profile = profile;
+}
