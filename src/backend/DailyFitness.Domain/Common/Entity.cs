@@ -5,7 +5,11 @@ public abstract class Entity
     public Guid Id { get; set; } = Guid.NewGuid();
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; } = null;
-    public EntityStatus Status { get; private set; } = EntityStatus.Active;
+    public EntityStatus Status { get; set; } = EntityStatus.Active;
+
+    protected Entity()
+    {
+    }
 
     protected void SetAsActive()
     {
@@ -18,5 +22,4 @@ public abstract class Entity
         if (Status == EntityStatus.Inactive) throw new InvalidOperationException("Operação inválida, registro já inativo!.");
         Status = EntityStatus.Inactive;
     }
-
 }

@@ -23,9 +23,7 @@ public static class DependencyInjection
         private void AddContext(IConfiguration configuration)
         {
             var connectionString =
-                configuration.GetConnectionString("DefaultConnection") ??
-                Environment.GetEnvironmentVariable("DefaultConnection") ??
-                string.Empty;
+                configuration.GetConnectionString("DefaultConnection")!;
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseMySQL(
