@@ -1,10 +1,13 @@
 ﻿using DailyFitness.Domain.Common;
+using DailyFitness.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DailyFitness.Infrastructure.Persistence;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
+    public DbSet<User> Users { get; set; }
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         ApplyAuditInfo();
