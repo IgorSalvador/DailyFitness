@@ -12,6 +12,15 @@ public class User : Entity
     public EUserProfile Profile { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
 
+    public User()
+    {
+        Email = string.Empty;
+        PasswordHash = string.Empty;
+        FirstName = string.Empty;
+        Surname = string.Empty;
+        Profile = EUserProfile.General;
+    }
+
     public User(string email, string passwordHash, string firstName, string surname, EUserProfile profile = EUserProfile.General)
     {
         Email = email;

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DailyFitness.Infrastructure.Repositories;
 
-public abstract class Repository<T>(AppDbContext context) : IRepository<T> where T : class
+public class Repository<T>(AppDbContext context) : IRepository<T> where T : class
 {
     protected readonly DbSet<T> set = context.Set<T>();
 
