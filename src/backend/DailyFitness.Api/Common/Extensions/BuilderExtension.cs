@@ -8,18 +8,26 @@ public static class BuilderExtension
         {
             builder.Services.AddControllers();
 
-            ApiConfiguration.FrontendUri = builder.Configuration["FrontendUri"] ??
-                                           Environment.GetEnvironmentVariable("FrontendUri") ??
-                                           string.Empty;
-
-            ApiConfiguration.BackendUri = builder.Configuration["BackendUri"] ??
-                                          Environment.GetEnvironmentVariable("BackendUri") ??
-                                          string.Empty;
+            ApiConfiguration.FrontendUris = builder.Configuration.GetValue<List<string>>("FrontendUri") ?? [];
         }
 
         public void AddDocumentation()
         {
             builder.Services.AddOpenApi();
+        }
+
+        public void AddCrossOrigin()
+        {
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(ApiConfiguration.CorsPolicyName, policy =>
+                {
+                    policy.WithOrigins(ApiConfiguration.FrontendUris.ToArray())
+                        .WithMethods("GET", "POST", "PUT", "DELETE")
+                        .WithHeaders("Authorization", "Content-Type")
+                        .AllowCredentials();
+                });
+            });
         }
 
         public void AddLogging()

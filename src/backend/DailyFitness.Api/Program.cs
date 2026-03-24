@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddLogging();
 builder.AddConfiguration();
 builder.AddDocumentation();
+builder.AddCrossOrigin();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
