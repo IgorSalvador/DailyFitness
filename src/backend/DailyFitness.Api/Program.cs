@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddLogging();
 builder.AddConfiguration();
 builder.AddDocumentation();
+builder.AddAuth();
 builder.AddCrossOrigin();
 
 builder.Services.AddApplication();
@@ -25,6 +26,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseCrossOrigin();
 app.UseHttpsRedirection();
-app.UseAuthorization();
+app.UseAuth();
 app.MapControllers();
 app.Run();
