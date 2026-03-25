@@ -40,7 +40,10 @@ public static class BuilderExtension
 
         public void AddDocumentation()
         {
-            builder.Services.AddOpenApi();
+            builder.Services.AddOpenApi("v1", options =>
+            {
+                options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+            });
         }
 
         public void AddCrossOrigin()
