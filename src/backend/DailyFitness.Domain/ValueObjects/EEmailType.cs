@@ -2,6 +2,6 @@
 
 public enum EEmailType
 {
-    FistAccess = 1,
+    Welcome = 1,
     ResetPassword = 2
 }

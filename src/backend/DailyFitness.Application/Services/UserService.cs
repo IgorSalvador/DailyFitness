@@ -11,7 +11,11 @@ using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace DailyFitness.Application.Services;
 
-public class UserService(IUserRepository userRepository, IPasswordHasherService passwordHasherService, IJwtService jwtService)
+public class UserService(
+    IUserRepository userRepository,
+    IPasswordHasherService passwordHasherService,
+    IJwtService jwtService,
+    IEmailService emailService)
     : IUserService
 {
     public async Task<ResultsDto<UserDto>> RegisterUser(CreateUserDto model, CancellationToken cancellationToken)
@@ -31,7 +35,9 @@ public class UserService(IUserRepository userRepository, IPasswordHasherService 
         userRepository.Add(user);
         await userRepository.SaveChanges(cancellationToken);
 
-        return ResultsDto<UserDto>.Ok(UserDto.FromEntity(user));
+        await emailService.SendWelcomeEmail(user.Email, user.FirstName, cancellationToken);
+
+        return ResultsDto<UserDto>.Ok(UserDto.FromEntity(user), "Registro realizado com sucesso!");
     }
 
     public async Task<ResultsDto<LoginResultDto>> Authenticate(LoginDto model, CancellationToken cancellationToken)

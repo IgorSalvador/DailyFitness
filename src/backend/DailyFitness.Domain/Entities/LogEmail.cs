@@ -19,6 +19,11 @@ public class LogEmail
     public DateTime CreatedAt { get; private set; }
     public DateTime? SentAt { get; set; }
 
+    public LogEmail()
+    {
+
+    }
+
     public LogEmail(string subject, string recipients, string body, string errorMessage)
     {
         Subject = subject;
@@ -50,6 +55,5 @@ public class LogEmail
     {
         IsSuccess = false;
         ErrorMessage = errorMessage;
-        SentAt = DateTime.Now;
     }
 }
