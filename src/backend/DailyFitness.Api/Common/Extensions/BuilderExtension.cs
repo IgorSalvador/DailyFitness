@@ -12,6 +12,8 @@ public static class BuilderExtension
         {
             builder.Services.AddControllers();
 
+            builder.Configuration.AddEnvironmentVariables(prefix: "DAILYFITNESS__");
+
             ApiConfiguration.FrontendUris = builder.Configuration.GetValue<List<string>>("FrontendUri") ?? [];
         }
 

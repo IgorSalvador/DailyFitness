@@ -46,9 +46,9 @@ public class UserService(IUserRepository userRepository, IPasswordHasherService 
         if(user == null || !passwordHasherService.VerifyPassword(model.Password, user.PasswordHash))
             return ResultsDto<LoginResultDto>.Fail("Falha de autenticação", ["E-mail ou senha inválidos"]);
 
-        var token = jwtService.GenerateToken(user);
+        var token = jwtService.GenerateToken(user, model.RememberMe);
 
-        return ResultsDto<LoginResultDto>.Ok(new LoginResultDto(token, DateTime.Now.AddMinutes(30)));
+        return ResultsDto<LoginResultDto>.Ok(new LoginResultDto(token));
     }
 
     private ValidationResult ExecuteValidation<TV, TE>(TV validation, TE entity) where TV : AbstractValidator<TE> where TE : class => validation.Validate(entity);

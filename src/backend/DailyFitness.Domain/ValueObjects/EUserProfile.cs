@@ -1,4 +1,4 @@
-﻿namespace DailyFitness.Domain.Enums;
+﻿namespace DailyFitness.Domain.ValueObjects;
 
 public enum EUserProfile
 {

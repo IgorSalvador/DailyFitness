@@ -1,5 +1,5 @@
 ﻿using DailyFitness.Domain.Common;
-using DailyFitness.Domain.Enums;
+using DailyFitness.Domain.ValueObjects;
 
 namespace DailyFitness.Domain.Entities;
 

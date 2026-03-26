@@ -10,7 +10,7 @@ namespace DailyFitness.Infrastructure.Authentication;
 
 public class JwtService(IConfiguration configuration) : IJwtService
 {
-    public string GenerateToken(User user)
+    public string GenerateToken(User user, bool rememberMe = false)
     {
         var claims = new []
         {
@@ -26,7 +26,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
             issuer: configuration["Jwt:Issuer"],
             audience: configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.Now.AddMinutes(30),
+            expires: rememberMe ? DateTime.Now.AddHours(8) : DateTime.Now.AddMinutes(30),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

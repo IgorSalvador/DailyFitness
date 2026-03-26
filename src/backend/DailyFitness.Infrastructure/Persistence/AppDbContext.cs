@@ -7,6 +7,7 @@ namespace DailyFitness.Infrastructure.Persistence;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
+    public DbSet<LogEmail> LogEmails => Set<LogEmail>();
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

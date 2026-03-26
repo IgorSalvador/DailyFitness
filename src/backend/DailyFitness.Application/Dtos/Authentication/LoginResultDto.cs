@@ -3,11 +3,9 @@
 public class LoginResultDto
 {
     public string Token { get; private set; }
-    public DateTime ValidUntil { get; private set; }
 
-    public LoginResultDto(string token, DateTime validUntil)
+    public LoginResultDto(string token)
     {
         Token = token;
-        ValidUntil = validUntil;
     }
 }

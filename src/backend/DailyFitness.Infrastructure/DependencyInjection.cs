@@ -5,6 +5,7 @@ using DailyFitness.Infrastructure.Authentication;
 using DailyFitness.Infrastructure.Persistence;
 using DailyFitness.Infrastructure.Repositories;
 using DailyFitness.Infrastructure.Security;
+using DailyFitness.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,12 +38,14 @@ public static class DependencyInjection
         {
             services.AddScoped<IPasswordHasherService, PasswordHasherService>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IEmailService, EmailService>();
         }
 
         private void AddRepositories()
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ILogEmailRepository, LogEmailRepository>();
         }
     }
 }
