@@ -31,4 +31,11 @@ public class UsersController(IUserService userService) : ControllerBase
         var result = await userService.ResetPasswordRequest(model, ApiConfiguration.FrontendUri, ct);
         return result.ToActionResult(this);
     }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetUserPasswordDto model, CancellationToken ct)
+    {
+        var result = await userService.ResetPassword(model, ct);
+        return result.ToActionResult(this);
+    }
 }

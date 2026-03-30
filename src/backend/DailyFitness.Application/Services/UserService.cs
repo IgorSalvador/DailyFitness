@@ -53,7 +53,11 @@ public class UserService(
 
         var token = jwtService.GenerateToken(user, model.RememberMe);
 
-        return ResultDto<LoginResultDto>.Ok(new LoginResultDto(token));
+        user.UpdateLastLoginAt();
+        userRepository.Update(user);
+        await userRepository.SaveChanges(cancellationToken);
+
+        return ResultDto<LoginResultDto>.Ok(new LoginResultDto(token), "Login realizado com sucesso!");
     }
 
     public async Task<ResultDto<string>> ResetPasswordRequest(ResetUserPasswordRequestDto model,
@@ -80,5 +84,31 @@ public class UserService(
         await emailService.SendResetPasswordEmail(user,$"{frontendUrl}/account/reset-password?token={request.Token}", cancellationToken);
 
         return ResultDto<string>.Ok(request.Token, "Solicitação de redefinição de senha enviada com sucesso");
+    }
+
+    public async Task<ResultDto<UserDto>> ResetPassword(ResetUserPasswordDto model, CancellationToken cancellationToken)
+    {
+        var validationResult = ExecuteValidation(new ResetUserPasswordDtoValidator(), model);
+
+        if(!validationResult.IsValid)
+            return ResultDto<UserDto>.Fail("Falha de validação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+
+        var request = await userRepository.GetActiveResetPasswordRequestWithUserByToken(model.Token, cancellationToken);
+
+        if(request == null || request.ValidUntil < DateTime.Now)
+            return ResultDto<UserDto>.Fail("Falha de validação", ["Solicitação de redefinição de senha não encontrada!"]);
+
+        var hashedPassword = passwordHasherService.HashPassword(model.Password);
+        var user = await userRepository.Get(request.UserId, cancellationToken);
+
+        if(user == null)
+            return ResultDto<UserDto>.Fail("Falha de validação", ["Usuário não encontrado"]);
+
+        user.UpdatePassword(hashedPassword);
+
+        userRepository.Update(user);
+        await userRepository.SaveChanges(cancellationToken);
+
+        return ResultDto<UserDto>.Ok(UserDto.FromEntity(user), "Senha redefinida com sucesso");
     }
 }

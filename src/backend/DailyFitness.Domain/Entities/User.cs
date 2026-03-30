@@ -39,6 +39,8 @@ public class User : Entity
         Surname = surname;
     }
 
+    public void UpdatePassword(string passwordHash) => PasswordHash = passwordHash;
+
     public void UpdateLastLoginAt() => LastLoginAt = DateTime.Now;
 
     public void UpdateProfile(EUserProfile profile) => Profile = profile;

@@ -37,4 +37,12 @@ public class UserRepository(AppDbContext context) : Repository<User>(context), I
 
         await SaveChanges(ct);
     }
+
+    public async Task<ResetPasswordRequest?> GetActiveResetPasswordRequestWithUserByToken(string token, CancellationToken ct)
+    {
+        return await _context.ResetPasswordRequests
+            .Include(x => x.User)
+            .FirstOrDefaultAsync(x => x.Token.ToLower() == token.ToLower()
+                                      && x.Status == EntityStatus.Active, ct);
+    }
 }
