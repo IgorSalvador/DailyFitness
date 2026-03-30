@@ -6,7 +6,7 @@ namespace DailyFitness.Api.Common.Extensions;
 
 public static class ResultDtoExtension
 {
-    public static IActionResult ToActionResult<T>(this ResultsDto<T> result, ControllerBase controller)
+    public static IActionResult ToActionResult<T>(this ResultDto<T> result, ControllerBase controller)
     {
         if (result.Success)
             return controller.Ok(new SuccessResult<T>(true, result.Message, result.Data));

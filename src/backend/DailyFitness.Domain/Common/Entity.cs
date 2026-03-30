@@ -2,24 +2,32 @@
 
 public abstract class Entity
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
-    public DateTime? UpdatedAt { get; set; } = null;
-    public EntityStatus Status { get; set; } = EntityStatus.Active;
+    public Guid Id { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public EntityStatus Status { get; set; }
 
     protected Entity()
     {
-    }
-
-    protected void SetAsActive()
-    {
-        if (Status == EntityStatus.Active) throw new InvalidOperationException("Operação inválida, registro já ativo!.");
+        Id = Guid.NewGuid();
+        CreatedAt = DateTime.Now;
+        UpdatedAt = null;
         Status = EntityStatus.Active;
     }
 
-    protected void SetAsInactive()
+    public void SetAsActive()
+    {
+        if (Status == EntityStatus.Active) throw new InvalidOperationException("Operação inválida, registro já ativo!.");
+
+        Status = EntityStatus.Active;
+        UpdatedAt = DateTime.Now;
+    }
+
+    public void SetAsInactive()
     {
         if (Status == EntityStatus.Inactive) throw new InvalidOperationException("Operação inválida, registro já inativo!.");
+
         Status = EntityStatus.Inactive;
+        UpdatedAt = DateTime.Now;
     }
 }

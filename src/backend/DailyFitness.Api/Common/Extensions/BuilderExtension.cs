@@ -14,7 +14,7 @@ public static class BuilderExtension
 
             builder.Configuration.AddEnvironmentVariables(prefix: "DAILYFITNESS__");
 
-            ApiConfiguration.FrontendUris = builder.Configuration.GetValue<List<string>>("FrontendUri") ?? [];
+            ApiConfiguration.FrontendUri = builder.Configuration.GetValue<string>("FrontendUri") ?? string.Empty;
         }
 
         public void AddAuth()
@@ -54,7 +54,7 @@ public static class BuilderExtension
             {
                 options.AddPolicy(ApiConfiguration.CorsPolicyName, policy =>
                 {
-                    policy.WithOrigins(ApiConfiguration.FrontendUris.ToArray())
+                    policy.WithOrigins(ApiConfiguration.FrontendUri)
                         .WithMethods("GET", "POST", "PUT", "DELETE")
                         .WithHeaders("Authorization", "Content-Type")
                         .AllowCredentials();

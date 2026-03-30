@@ -3,22 +3,12 @@ using FluentValidation;
 
 namespace DailyFitness.Application.Validators.Users;
 
-public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
+public class ResetUserPasswordDtoValidator : AbstractValidator<ResetUserPasswordDto>
 {
-    public CreateUserDtoValidator()
+    public ResetUserPasswordDtoValidator()
     {
-        RuleFor(x => x.Firstname)
-            .NotEmpty().WithMessage("O primeiro nome é obrigatório.")
-            .MaximumLength(255).WithMessage("O primeiro nome deve ter no máximo 255 caracteres.");
-
-        RuleFor(x => x.Surname)
-            .NotEmpty().WithMessage("O sobrenome é obrigatório.")
-            .MaximumLength(255).WithMessage("O sobrenome deve ter no máximo 255 caracteres.");
-
-        RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("O e-mail é obrigatório.")
-            .MaximumLength(255).WithMessage("O e-mail deve ter no máximo 255 caracteres.")
-            .EmailAddress().WithMessage("O e-mail informado é inválido.");
+        RuleFor(x => x.Token)
+            .NotEmpty().WithMessage("O Token é obrigatório.");
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("A senha é obrigatória.")

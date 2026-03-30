@@ -27,16 +27,20 @@ public class EmailService(ILogEmailRepository logEmailRepository, IConfiguration
         body.AppendLine("</p>");
 
         body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
-        body.AppendLine("Seu cadastro foi realizado com sucesso e agora você já pode começar sua jornada com mais organização, foco e consistência nos seus treinos.");
+        body.AppendLine(
+            "Seu cadastro foi realizado com sucesso e agora você já pode começar sua jornada com mais organização, foco e consistência nos seus treinos.");
         body.AppendLine("</p>");
 
         body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
-        body.AppendLine("Na plataforma, você poderá acompanhar sua rotina, estruturar seus objetivos e manter sua evolução sempre em dia.");
+        body.AppendLine(
+            "Na plataforma, você poderá acompanhar sua rotina, estruturar seus objetivos e manter sua evolução sempre em dia.");
         body.AppendLine("</p>");
 
-        body.AppendLine("<div style=\"margin:24px 0;padding:16px;border-left:4px solid #FFD54A;background-color:#FFF8DB;border-radius:8px;\">");
+        body.AppendLine(
+            "<div style=\"margin:24px 0;padding:16px;border-left:4px solid #FFD54A;background-color:#FFF8DB;border-radius:8px;\">");
         body.AppendLine("    <p style=\"margin:0;font-size:15px;line-height:22px;color:#111111;\">");
-        body.AppendLine("        <strong style=\"color:#5B21B6;\">Dica inicial:</strong> complete suas informações e organize seus primeiros passos para aproveitar melhor a experiência no aplicativo.");
+        body.AppendLine(
+            "        <strong style=\"color:#5B21B6;\">Dica inicial:</strong> complete suas informações e organize seus primeiros passos para aproveitar melhor a experiência no aplicativo.");
         body.AppendLine("    </p>");
         body.AppendLine("</div>");
 
@@ -45,7 +49,8 @@ public class EmailService(ILogEmailRepository logEmailRepository, IConfiguration
         body.AppendLine("</br>");
 
         body.AppendLine("<p style=\"margin:0;font-size:14px;line-height:22px;color:#4B5563;\">");
-        body.AppendLine("Conte com o <strong style=\"color:#5B21B6;\">Daily Fitness</strong> para apoiar sua evolução todos os dias.");
+        body.AppendLine(
+            "Conte com o <strong style=\"color:#5B21B6;\">Daily Fitness</strong> para apoiar sua evolução todos os dias.");
         body.AppendLine("</p>");
 
         #endregion
@@ -55,7 +60,61 @@ public class EmailService(ILogEmailRepository logEmailRepository, IConfiguration
         await Send(EEmailType.Welcome, subject, [email], bodyHtml, ct);
     }
 
-    private async Task Send(EEmailType emailType, string subject, List<string> recipients, string body, CancellationToken ct, MailPriority mailPriority = MailPriority.Normal)
+    public async Task SendResetPasswordEmail(User user, string requestUrl, CancellationToken ct)
+    {
+        const string subject = "Solicitação de redefinição de senha!";
+
+        var body = new StringBuilder();
+
+        #region Body
+
+        body.AppendLine($"<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">Olá, {user.FirstName}!</p>");
+
+        body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
+        body.AppendLine(
+            "Recebemos uma solicitação para redefinir a sua senha no <strong style=\"color:#5B21B6;\">Daily Fitness</strong>.");
+        body.AppendLine("</p>");
+
+        body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
+        body.AppendLine("Para continuar com a alteração, clique no botão abaixo:");
+        body.AppendLine("</p>");
+
+        body.AppendLine("<div style=\"text-align:center;margin:24px 0;\">");
+        body.AppendLine(
+            $"    <a href=\"{requestUrl}\" style=\"display:inline-block;background-color:#5B21B6;color:#FFF;text-decoration:none;padding:14px 24px;border-radius:10px;font-weight:bold;font-size:14px;\">Redefinir senha</a>");
+        body.AppendLine("</div>");
+
+        body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:15px;line-height:22px;color:#111111;\">");
+        body.AppendLine("Caso o botão acima não funcione, copie e cole o link abaixo no seu navegador:");
+        body.AppendLine("</p>");
+
+        body.AppendLine(
+            $"<p style=\"margin:0 0 24px 0;font-size:14px;line-height:22px;word-break:break-all;\"><a href=\"{requestUrl}\" style=\"color:#5B21B6;text-decoration:underline;\">{requestUrl}</a></p>");
+
+        body.AppendLine(
+            "<div style=\"margin:24px 0;padding:16px;border-left:4px solid #FFD54A;background-color:#FFF8DB;border-radius:8px;\">");
+        body.AppendLine("    <p style=\"margin:0 0 8px 0;font-size:15px;line-height:22px;color:#111111;\">");
+        body.AppendLine(
+            "        <strong style=\"color:#5B21B6;\">Importante:</strong> por segurança, este link deve ser utilizado dentro do prazo configurado pelo sistema.");
+        body.AppendLine("    </p>");
+        body.AppendLine("    <p style=\"margin:0;font-size:15px;line-height:22px;color:#111111;\">");
+        body.AppendLine(
+            "        Se você não solicitou a redefinição de senha, ignore este e-mail. Nenhuma alteração será realizada automaticamente.");
+        body.AppendLine("    </p>");
+        body.AppendLine("</div>");
+
+        body.AppendLine("<p style=\"margin:0;font-size:14px;line-height:22px;color:#4B5563;\">");
+        body.AppendLine("Se necessário, solicite uma nova redefinição diretamente pela plataforma.");
+
+        #endregion
+
+        var bodyHtml = BuildDefaultLayout(subject, body.ToString());
+
+        await Send(EEmailType.ResetPassword, subject, [user.Email], bodyHtml, ct);
+    }
+
+    private async Task Send(EEmailType emailType, string subject, List<string> recipients, string body,
+        CancellationToken ct, MailPriority mailPriority = MailPriority.Normal)
     {
         var jsonRecipients = JsonSerializer.Serialize(recipients);
         var logEmail = new LogEmail(emailType, subject, jsonRecipients, body);
@@ -79,7 +138,8 @@ public class EmailService(ILogEmailRepository logEmailRepository, IConfiguration
             smtpClient.Port = int.Parse(configuration["Smtp:Port"]!);
             smtpClient.EnableSsl = true;
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            smtpClient.Credentials = new NetworkCredential(configuration["Smtp:UserName"]!, configuration["Smtp:Password"]!);
+            smtpClient.Credentials =
+                new NetworkCredential(configuration["Smtp:UserName"]!, configuration["Smtp:Password"]!);
 
             await smtpClient.SendMailAsync(mailMessage, ct);
 
@@ -98,73 +158,73 @@ public class EmailService(ILogEmailRepository logEmailRepository, IConfiguration
     }
 
     private static string BuildDefaultLayout(string title, string bodyHtml, string? preHeader = null)
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine("<!DOCTYPE html>");
+        sb.AppendLine("<html lang=\"pt-BR\">");
+        sb.AppendLine("<head>");
+        sb.AppendLine("<meta charset=\"UTF-8\">");
+        sb.AppendLine("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+        sb.AppendLine($"<title>{title}</title>");
+        sb.AppendLine("</head>");
+        sb.AppendLine("<body style=\"margin:0;padding:0;background-color:#f5f5f5;font-family:Arial,Helvetica,sans-serif;color:#111111;\">");
+
+        if (!string.IsNullOrWhiteSpace(preHeader))
         {
-            var sb = new StringBuilder();
-
-            sb.AppendLine("<!DOCTYPE html>");
-            sb.AppendLine("<html lang=\"pt-BR\">");
-            sb.AppendLine("<head>");
-            sb.AppendLine("    <meta charset=\"UTF-8\">");
-            sb.AppendLine("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
-            sb.AppendLine($"    <title>{title}</title>");
-            sb.AppendLine("</head>");
-            sb.AppendLine("<body style=\"margin:0;padding:0;background-color:#f5f5f5;font-family:Arial,Helvetica,sans-serif;color:#111111;\">");
-
-            if (!string.IsNullOrWhiteSpace(preHeader))
-            {
-                sb.AppendLine($"    <div style=\"display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;\">{preHeader}</div>");
-            }
-
-            sb.AppendLine("    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#f5f5f5;margin:0;padding:24px 0;\">");
-            sb.AppendLine("        <tr>");
-            sb.AppendLine("            <td align=\"center\">");
-
-            sb.AppendLine("                <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px;background-color:#fff;border-radius:16px;overflow:hidden;\">");
-
-            // Header
-            sb.AppendLine("                    <tr>");
-            sb.AppendLine("                        <td style=\"background-color:#5B21B6;padding:32px 24px;text-align:center;\">");
-            sb.AppendLine("                            <h1 style=\"margin:0;font-size:28px;line-height:36px;color:#FFD54A;font-weight:bold;\">Daily Fitness</h1>");
-            sb.AppendLine("                            <p style=\"margin:12px 0 0 0;font-size:14px;line-height:22px;color:#F3E8FF;\">Sua rotina. Sua evolução. Seu resultado.</p>");
-            sb.AppendLine("                        </td>");
-            sb.AppendLine("                    </tr>");
-
-            // Barra de destaque
-            sb.AppendLine("                    <tr>");
-            sb.AppendLine("                        <td style=\"height:6px;background-color:#FFD54A;\"></td>");
-            sb.AppendLine("                    </tr>");
-
-            // Título
-            sb.AppendLine("                    <tr>");
-            sb.AppendLine("                        <td style=\"padding:32px 24px 16px 24px;\">");
-            sb.AppendLine($"                            <h2 style=\"margin:0;font-size:24px;line-height:32px;color:#111111;font-weight:bold;\">{title}</h2>");
-            sb.AppendLine("                        </td>");
-            sb.AppendLine("                    </tr>");
-
-            // Conteúdo
-            sb.AppendLine("                    <tr>");
-            sb.AppendLine("                        <td style=\"padding:0 24px 32px 24px;\">");
-            sb.AppendLine($"                            {bodyHtml}");
-            sb.AppendLine("                        </td>");
-            sb.AppendLine("                    </tr>");
-
-            // Rodapé
-            sb.AppendLine("                    <tr>");
-            sb.AppendLine("                        <td style=\"background-color:#111111;padding:24px;text-align:center;\">");
-            sb.AppendLine("                            <p style=\"margin:0;font-size:13px;line-height:20px;color:#FFD54A;font-weight:bold;\">Daily Fitness</p>");
-            sb.AppendLine("                            <p style=\"margin:8px 0 0 0;font-size:12px;line-height:18px;color:#D1D5DB;\">Este é um e-mail automático. Caso necessário, entre em contato com o suporte da plataforma.</p>");
-            sb.AppendLine("                        </td>");
-            sb.AppendLine("                    </tr>");
-
-            sb.AppendLine("                </table>");
-
-            sb.AppendLine("            </td>");
-            sb.AppendLine("        </tr>");
-            sb.AppendLine("    </table>");
-
-            sb.AppendLine("</body>");
-            sb.AppendLine("</html>");
-
-            return sb.ToString();
+            sb.AppendLine($"<div style=\"display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;\">{preHeader}</div>");
         }
+
+        sb.AppendLine("<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#f5f5f5;margin:0;padding:24px 0;\">");
+        sb.AppendLine("<tr>");
+        sb.AppendLine("<td align=\"center\">");
+
+        sb.AppendLine("<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px;background-color:#fff;border-radius:16px;overflow:hidden;\">");
+
+        // Header
+        sb.AppendLine("<tr>");
+        sb.AppendLine("<td style=\"background-color:#5B21B6;padding:32px 24px;text-align:center;\">");
+        sb.AppendLine("<h1 style=\"margin:0;font-size:28px;line-height:36px;color:#FFD54A;font-weight:bold;\">Daily Fitness</h1>");
+        sb.AppendLine("<p style=\"margin:12px 0 0 0;font-size:14px;line-height:22px;color:#F3E8FF;\">Sua rotina. Sua evolução. Seu resultado.</p>");
+        sb.AppendLine("</td>");
+        sb.AppendLine("</tr>");
+
+        // Barra de destaque
+        sb.AppendLine("<tr>");
+        sb.AppendLine("<td style=\"height:6px;background-color:#FFD54A;\"></td>");
+        sb.AppendLine("</tr>");
+
+        // Título
+        sb.AppendLine("<tr>");
+        sb.AppendLine("<td style=\"padding:32px 24px 16px 24px;\">");
+        sb.AppendLine($"<h2 style=\"margin:0;font-size:24px;line-height:32px;color:#111111;font-weight:bold;\">{title}</h2>");
+        sb.AppendLine("</td>");
+        sb.AppendLine("</tr>");
+
+        // Conteúdo
+        sb.AppendLine("<tr>");
+        sb.AppendLine("<td style=\"padding:0 24px 32px 24px;\">");
+        sb.AppendLine($"{bodyHtml}");
+        sb.AppendLine("</td>");
+        sb.AppendLine("</tr>");
+
+        // Rodapé
+        sb.AppendLine("<tr>");
+        sb.AppendLine("<td style=\"background-color:#111111;padding:24px;text-align:center;\">");
+        sb.AppendLine("<p style=\"margin:0;font-size:13px;line-height:20px;color:#FFD54A;font-weight:bold;\">Daily Fitness</p>");
+        sb.AppendLine("<p style=\"margin:8px 0 0 0;font-size:12px;line-height:18px;color:#D1D5DB;\">Este é um e-mail automático. Caso necessário, entre em contato com o suporte da plataforma.</p>");
+        sb.AppendLine("</td>");
+        sb.AppendLine("</tr>");
+
+        sb.AppendLine("</table>");
+
+        sb.AppendLine("</td>");
+        sb.AppendLine("</tr>");
+        sb.AppendLine("</table>");
+
+        sb.AppendLine("</body>");
+        sb.AppendLine("</html>");
+
+        return sb.ToString();
+    }
 }

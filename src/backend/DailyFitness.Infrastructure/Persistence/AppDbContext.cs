@@ -8,6 +8,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<LogEmail> LogEmails => Set<LogEmail>();
+    public DbSet<ResetPasswordRequest> ResetPasswordRequests => Set<ResetPasswordRequest>();
+
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

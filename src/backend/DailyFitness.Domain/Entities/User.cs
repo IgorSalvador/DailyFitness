@@ -12,6 +12,8 @@ public class User : Entity
     public EUserProfile Profile { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
 
+    public ICollection<ResetPasswordRequest> ResetPasswordRequests { get; set; }
+
     public User()
     {
         Email = string.Empty;

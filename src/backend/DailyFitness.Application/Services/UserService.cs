@@ -5,9 +5,8 @@ using DailyFitness.Application.Interfaces.Repositories;
 using DailyFitness.Application.Interfaces.Security;
 using DailyFitness.Application.Interfaces.Services;
 using DailyFitness.Application.Validators.Authentication;
-using DailyFitness.Application.Validators.User;
-using FluentValidation;
-using ValidationResult = FluentValidation.Results.ValidationResult;
+using DailyFitness.Application.Validators.Users;
+using DailyFitness.Domain.Entities;
 
 namespace DailyFitness.Application.Services;
 
@@ -16,17 +15,17 @@ public class UserService(
     IPasswordHasherService passwordHasherService,
     IJwtService jwtService,
     IEmailService emailService)
-    : IUserService
+    : BaseService, IUserService
 {
-    public async Task<ResultsDto<UserDto>> RegisterUser(CreateUserDto model, CancellationToken cancellationToken)
+    public async Task<ResultDto<UserDto>> RegisterUser(CreateUserDto model, CancellationToken cancellationToken)
     {
         var validationResult = ExecuteValidation(new CreateUserDtoValidator(), model);
 
         if (!validationResult.IsValid)
-            return ResultsDto<UserDto>.Fail("Falha de validação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+            return ResultDto<UserDto>.Fail("Falha de validação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
 
         if (await userRepository.GetIfAlreadyExist(model.Email, cancellationToken))
-            return ResultsDto<UserDto>.Fail("Falha de registro", ["E-mail já cadastrado"]);
+            return ResultDto<UserDto>.Fail("Falha de registro", ["E-mail já cadastrado"]);
 
         var hashedPassword = passwordHasherService.HashPassword(model.Password);
         model.Password = hashedPassword;
@@ -37,25 +36,49 @@ public class UserService(
 
         await emailService.SendWelcomeEmail(user.Email, user.FirstName, cancellationToken);
 
-        return ResultsDto<UserDto>.Ok(UserDto.FromEntity(user), "Registro realizado com sucesso!");
+        return ResultDto<UserDto>.Ok(UserDto.FromEntity(user), "Registro realizado com sucesso!");
     }
 
-    public async Task<ResultsDto<LoginResultDto>> Authenticate(LoginDto model, CancellationToken cancellationToken)
+    public async Task<ResultDto<LoginResultDto>> Authenticate(LoginDto model, CancellationToken cancellationToken)
     {
         var validationResult = ExecuteValidation(new LoginDtoValidator(), model);
 
         if(!validationResult.IsValid)
-            return ResultsDto<LoginResultDto>.Fail("Falha de autenticação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+            return ResultDto<LoginResultDto>.Fail("Falha de autenticação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
 
         var user = await userRepository.GetByEmail(model.Email, cancellationToken);
 
         if(user == null || !passwordHasherService.VerifyPassword(model.Password, user.PasswordHash))
-            return ResultsDto<LoginResultDto>.Fail("Falha de autenticação", ["E-mail ou senha inválidos"]);
+            return ResultDto<LoginResultDto>.Fail("Falha de autenticação", ["E-mail ou senha inválidos"]);
 
         var token = jwtService.GenerateToken(user, model.RememberMe);
 
-        return ResultsDto<LoginResultDto>.Ok(new LoginResultDto(token));
+        return ResultDto<LoginResultDto>.Ok(new LoginResultDto(token));
     }
 
-    private ValidationResult ExecuteValidation<TV, TE>(TV validation, TE entity) where TV : AbstractValidator<TE> where TE : class => validation.Validate(entity);
+    public async Task<ResultDto<string>> ResetPasswordRequest(ResetUserPasswordRequestDto model,
+        string frontendUrl, CancellationToken cancellationToken)
+    {
+        var validationResult = ExecuteValidation(new ResetUserPasswordRequestDtoValidator(), model);
+
+        if(!validationResult.IsValid)
+            return ResultDto<string>.Fail("Falha de validação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+
+        var user = await userRepository.GetByEmail(model.Email, cancellationToken);
+
+        if(user == null)
+            return ResultDto<string>.Fail("Falha de validação", ["Usuário não encontrado"]);
+
+        await userRepository.CancelActiveResetPasswordRequest(user.Id, cancellationToken);
+
+        var token = Guid.NewGuid().ToString();
+
+        var request = new ResetPasswordRequest(token, user.Id);
+
+        await userRepository.AddResetPasswordRequest(request, cancellationToken);
+
+        await emailService.SendResetPasswordEmail(user,$"{frontendUrl}/account/reset-password?token={request.Token}", cancellationToken);
+
+        return ResultDto<string>.Ok(request.Token, "Solicitação de redefinição de senha enviada com sucesso");
+    }
 }
