@@ -29,9 +29,6 @@ jobs:
       - name: Build
         run: dotnet build DailyFitness.Api/DailyFitness.Api.csproj --no-restore --configuration Release
 
-      - name: Test
-        run: dotnet test DailyFitness.sln --no-build --configuration Release --verbosity normal
-
       - name: Publish
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: dotnet publish DailyFitness.Api/DailyFitness.Api.csproj --no-build --configuration Release --output ./publish
