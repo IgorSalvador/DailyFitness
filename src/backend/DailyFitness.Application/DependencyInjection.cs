@@ -18,6 +18,7 @@ public static class DependencyInjection
         private void AddServices()
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IProfessionalService, ProfessionalService>();
         }
 
         private void AddValidation()

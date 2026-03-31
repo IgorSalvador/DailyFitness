@@ -2,6 +2,8 @@
 
 public enum EEmailType
 {
-    Welcome = 1,
-    ResetPassword = 2
+    WelcomeNotification = 1,
+    ResetPasswordNotification = 2,
+    ProfessionalRequestAdminNotification = 3,
+    UserProfessionalRequestNotification = 4
 }

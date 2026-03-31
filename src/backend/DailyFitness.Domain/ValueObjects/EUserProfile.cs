@@ -3,5 +3,6 @@
 public enum EUserProfile
 {
     Administrator,
-    General
+    General,
+    Professional
 }

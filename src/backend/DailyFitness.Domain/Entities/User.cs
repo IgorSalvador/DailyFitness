@@ -12,7 +12,9 @@ public class User : Entity
     public EUserProfile Profile { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
 
-    public ICollection<ResetPasswordRequest> ResetPasswordRequests { get; set; }
+    public ICollection<ResetPasswordRequest> ResetPasswordRequests { get; init; }
+    public ICollection<ProfessionalRequest>? ProfessionalRequests { get; set; } = new List<ProfessionalRequest>();
+    public ICollection<ProfessionalRequest>? EvaluatedProfessionalRequests { get; set; } = new List<ProfessionalRequest>();
 
     public User()
     {
@@ -21,6 +23,7 @@ public class User : Entity
         FirstName = string.Empty;
         Surname = string.Empty;
         Profile = EUserProfile.General;
+        ResetPasswordRequests = new List<ResetPasswordRequest>();
     }
 
     public User(string email, string passwordHash, string firstName, string surname, EUserProfile profile = EUserProfile.General)
@@ -30,6 +33,7 @@ public class User : Entity
         FirstName = firstName;
         Surname = surname;
         Profile = profile;
+        ResetPasswordRequests = new List<ResetPasswordRequest>();
     }
 
     public void Update(string email, string firstName, string surname)

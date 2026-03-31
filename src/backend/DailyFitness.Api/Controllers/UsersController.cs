@@ -2,7 +2,6 @@
 using DailyFitness.Application.Dtos.Authentication;
 using DailyFitness.Application.Dtos.Users;
 using DailyFitness.Application.Interfaces.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DailyFitness.Api.Controllers;
@@ -38,4 +37,6 @@ public class UsersController(IUserService userService) : ControllerBase
         var result = await userService.ResetPassword(model, ct);
         return result.ToActionResult(this);
     }
+
+
 }

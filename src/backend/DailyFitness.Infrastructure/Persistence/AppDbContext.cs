@@ -9,6 +9,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users => Set<User>();
     public DbSet<LogEmail> LogEmails => Set<LogEmail>();
     public DbSet<ResetPasswordRequest> ResetPasswordRequests => Set<ResetPasswordRequest>();
+    public DbSet<ProfessionalRequest> ProfessionalRequests => Set<ProfessionalRequest>();
 
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -31,9 +32,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         foreach (var entry in entries)
         {
-            if (entry.State == EntityState.Added) entry.Entity.CreatedAt = DateTime.UtcNow;
+            if (entry.State == EntityState.Added) entry.Entity.CreatedAt = DateTime.Now;
 
-            if (entry.State == EntityState.Modified) entry.Entity.UpdatedAt = DateTime.UtcNow;
+            if (entry.State == EntityState.Modified) entry.Entity.UpdatedAt = DateTime.Now;
         }
     }
 
