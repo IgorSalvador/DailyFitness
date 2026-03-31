@@ -1,4 +1,3 @@
-using DailyFitness.Api;
 using DailyFitness.Api.Common.Extensions;
 using DailyFitness.Application;
 using DailyFitness.Infrastructure;
@@ -21,7 +20,7 @@ var app = builder.Build();
 app.UseGlobalExceptionHandler();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || builder.Configuration["IsDevelopment"] == "Y")
     app.ConfigureDevEnvironment();
 
 app.UseCrossOrigin();

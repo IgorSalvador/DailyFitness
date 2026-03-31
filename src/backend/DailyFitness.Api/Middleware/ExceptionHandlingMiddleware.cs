@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using DailyFitness.Api.Common.Models;
 using DailyFitness.Application.Common.ErrorCodes;
@@ -36,9 +36,11 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
             _ => (
                 StatusCodes.Status500InternalServerError,
                 ErrorCodes.InternalServerError,
-                "Ocorreu um erro interno na aplicação.",
+                $"Ocorreu um erro interno na aplicação.",
                 Array.Empty<string>(),
                 LogLevel.Error
+
+                // TODO -> Implementar logging no banco de exceções
             )
         };
 

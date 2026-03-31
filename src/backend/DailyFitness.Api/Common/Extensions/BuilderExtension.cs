@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,7 +12,11 @@ public static class BuilderExtension
         {
             builder.Services.AddControllers();
 
-            builder.Configuration.AddEnvironmentVariables(prefix: "DAILYFITNESS__");
+            builder.Configuration
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables(prefix: "DAILYFITNESS__")
+                .AddUserSecrets<Program>(optional: true);
 
             ApiConfiguration.FrontendUri = builder.Configuration.GetValue<string>("FrontendUri") ?? string.Empty;
         }
