@@ -8,4 +8,5 @@ public interface IEmailService
     Task SendResetPasswordEmail(User user, string requestUrl, CancellationToken ct);
     Task SendUserProfessionalRequestForAdministratorsEmail(List<string> administrators, CancellationToken ct);
     Task SendUserProfessionalRequestEmail(User user, CancellationToken ct);
+    Task SendUserProfessionalRequestFeedbackEmail(ProfessionalRequest request, CancellationToken ct);
 }

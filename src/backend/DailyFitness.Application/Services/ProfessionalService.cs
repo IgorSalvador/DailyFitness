@@ -25,7 +25,9 @@ public class ProfessionalService(
 
         var existingRequests =
             await professionalRequestRepository.Find(x => x.UserId == professionalRequest.UserId
-                && x.ProfessionalRequestStatus == EProfessionalRequestStatus.Pending, cancellationToken);
+                && x.ProfessionalRequestStatus == EProfessionalRequestStatus.Pending
+                || x.ProfessionalRequestStatus == EProfessionalRequestStatus.Approved
+                , cancellationToken);
 
         if(existingRequests.Any())
             return ResultDto<ProfessionalRequestDto>.Fail("Já existe uma solicitação pendente");
@@ -42,6 +44,41 @@ public class ProfessionalService(
 
         await emailService.SendUserProfessionalRequestForAdministratorsEmail(administrators.Select(x => x.Email).ToList(), cancellationToken);
         await emailService.SendUserProfessionalRequestEmail(user, cancellationToken);
+
+        return ResultDto<ProfessionalRequestDto>.Ok(ProfessionalRequestDto.FromEntity(professionalRequest));
+    }
+
+    public async Task<ResultDto<ProfessionalRequestDto>> Get(GetProfessionalRequestDto model, CancellationToken ct)
+    {
+        var professionalRequestId = Guid.Parse(model.Id);
+        var professionalRequest = await professionalRequestRepository.GetWithAll(professionalRequestId, ct);
+
+        return professionalRequest is not null ?
+            ResultDto<ProfessionalRequestDto>.Ok(ProfessionalRequestDto.FromEntity(professionalRequest)) :
+            ResultDto<ProfessionalRequestDto>.Fail("Solicitação não encontrada");
+    }
+
+    public async Task<ResultDto<ProfessionalRequestDto>> EvaluateRequest(ProfessionalRequestEvaluationDto model,
+        Guid evaluatorId, CancellationToken ct)
+    {
+        var validationResult = ExecuteValidation(new ProfessionalRequestEvaluationDtoValidator(), model);
+
+        if(!validationResult.IsValid)
+            return ResultDto<ProfessionalRequestDto>.Fail("Falha de validação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+
+        var requestId = Guid.Parse(model.ProfessionalRequestId);
+
+        var professionalRequest = await professionalRequestRepository.GetWithUser(requestId, ct);
+
+        if(professionalRequest == null)
+            return ResultDto<ProfessionalRequestDto>.Fail("Falha de validação", ["Solicitação não encontrada"]);
+
+        professionalRequest.SetAsEvaluated(evaluatorId, model.IsApproved, model.Comments);
+
+        professionalRequestRepository.Update(professionalRequest);
+        await professionalRequestRepository.SaveChanges(ct);
+
+        await emailService.SendUserProfessionalRequestFeedbackEmail(professionalRequest, ct);
 
         return ResultDto<ProfessionalRequestDto>.Ok(ProfessionalRequestDto.FromEntity(professionalRequest));
     }

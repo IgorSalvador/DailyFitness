@@ -27,8 +27,7 @@ public class ProfessionalRequestMapping : IEntityTypeConfiguration<ProfessionalR
             .IsRequired();
 
         builder.Property(x => x.EvaluationComments)
-            .HasMaxLength(2000)
-            .IsRequired();
+            .HasMaxLength(2000);
 
         builder.Property(x => x.CreatedAt)
             .IsRequired();

@@ -10,7 +10,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace DailyFitness.Infrastructure.Services;
 
-public class EmailService(ILogEmailRepository logEmailRepository, IConfiguration configuration) : IEmailService
+public class EmailService(
+    ILogEmailRepository logEmailRepository,
+    IConfiguration configuration)
+    : IEmailService
 {
     public async Task SendWelcomeEmail(string email, string firstName, CancellationToken ct)
     {
@@ -114,7 +117,8 @@ public class EmailService(ILogEmailRepository logEmailRepository, IConfiguration
         await Send(EEmailType.ResetPasswordNotification, subject, [user.Email], bodyHtml, ct);
     }
 
-    public async Task SendUserProfessionalRequestForAdministratorsEmail(List<string> administrators, CancellationToken ct)
+    public async Task SendUserProfessionalRequestForAdministratorsEmail(List<string> administrators,
+        CancellationToken ct)
     {
         const string subject = "Solicitação de acesso como profissional fitness!";
 
@@ -213,6 +217,77 @@ public class EmailService(ILogEmailRepository logEmailRepository, IConfiguration
         var bodyHtml = BuildDefaultLayout(subject, body.ToString());
 
         await Send(EEmailType.UserProfessionalRequestNotification, subject, [user.Email], bodyHtml, ct);
+    }
+
+    public async Task SendUserProfessionalRequestFeedbackEmail(ProfessionalRequest request, CancellationToken ct)
+    {
+        const string subject = "Feedback de solicitação de acesso como profissional fitness!";
+
+        var body = new StringBuilder();
+
+        #region Body
+
+        body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">Olá!</p>");
+
+        if ((int)request.ProfessionalRequestStatus == 2)
+        {
+            body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
+            body.AppendLine(
+                "Sua solicitação de acesso como <strong style=\"color:#5B21B6;\">profissional fitness</strong> no <strong style=\"color:#5B21B6;\">Daily Fitness</strong> foi <strong style=\"color:#5B21B6;\">aprovada</strong>.");
+            body.AppendLine("</p>");
+
+            body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
+            body.AppendLine(
+                "Seu perfil foi validado com sucesso e agora você poderá utilizar os recursos destinados aos profissionais dentro da plataforma.");
+            body.AppendLine("</p>");
+
+            if (!string.IsNullOrWhiteSpace(request.EvaluationComments))
+            {
+                body.AppendLine(
+                    "<div style=\"margin:24px 0;padding:16px;border-left:4px solid #FFD54A;background-color:#FFF8DB;border-radius:8px;\">");
+                body.AppendLine("<p style=\"margin:0 0 8px 0;font-size:15px;line-height:22px;color:#111111;\">");
+                body.AppendLine("<strong style=\"color:#5B21B6;\">Comentário da avaliação:</strong>");
+                body.AppendLine("</p>");
+                body.AppendLine(
+                    $"<p style=\"margin:0;font-size:15px;line-height:22px;color:#111111;\">{request.EvaluationComments}</p>");
+                body.AppendLine("</div>");
+            }
+
+            body.AppendLine("<p style=\"margin:0 0 24px 0;font-size:16px;line-height:24px;color:#111111;\">");
+            body.AppendLine(
+                "Recomendamos que você acesse a plataforma para conferir os recursos disponíveis no seu perfil atualizado.");
+        }
+        else
+        {
+            body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
+            body.AppendLine(
+                "Sua solicitação de acesso como <strong style=\"color:#5B21B6;\">profissional fitness</strong> no <strong style=\"color:#5B21B6;\">Daily Fitness</strong> foi <strong style=\"color:#111111;\">reprovada</strong> após a avaliação administrativa.");
+            body.AppendLine("</p>");
+
+            body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
+            body.AppendLine("No momento, não foi possível aprovar a liberação do seu perfil profissional.");
+            body.AppendLine("</p>");
+
+            body.AppendLine(
+                "<div style=\"margin:24px 0;padding:16px;border-left:4px solid #FFD54A;background-color:#FFF8DB;border-radius:8px;\">");
+            body.AppendLine("<p style=\"margin:0 0 8px 0;font-size:15px;line-height:22px;color:#111111;\">");
+            body.AppendLine("<strong style=\"color:#5B21B6;\">Motivo da avaliação:</strong>");
+            body.AppendLine("</p>");
+            body.AppendLine($"<p style=\"margin:0;font-size:15px;line-height:22px;color:#111111;\">{request.EvaluationComments}</p>");
+            body.AppendLine("</div>");
+
+            body.AppendLine("<p style=\"margin:0 0 24px 0;font-size:16px;line-height:24px;color:#111111;\">");
+            body.AppendLine(
+                "Caso necessário, revise as informações enviadas e realize uma nova solicitação futuramente.");
+        }
+
+        body.AppendLine("</p>");
+
+        #endregion
+
+        var bodyHtml = BuildDefaultLayout(subject, body.ToString());
+
+        await Send(EEmailType.UserProfessionalRequestFeedbackNotification, subject, [request.User.Email], bodyHtml, ct);
     }
 
     private async Task Send(EEmailType emailType, string subject, List<string> recipients, string body,

@@ -37,6 +37,4 @@ public class UsersController(IUserService userService) : ControllerBase
         var result = await userService.ResetPassword(model, ct);
         return result.ToActionResult(this);
     }
-
-
 }

@@ -31,7 +31,7 @@ public class ProfessionalRequest : Entity
         ProfessionalRequestStatus = EProfessionalRequestStatus.Pending;
     }
 
-    public void SetAsEvaluated(Guid evaluatorId, bool isApproved, string evaluationComments = "")
+    public void SetAsEvaluated(Guid evaluatorId, bool isApproved, string? evaluationComments = "")
     {
         ProfessionalRequestStatus = isApproved
             ? EProfessionalRequestStatus.Approved
