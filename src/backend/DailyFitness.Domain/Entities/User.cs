@@ -47,5 +47,9 @@ public class User : Entity
 
     public void UpdateLastLoginAt() => LastLoginAt = DateTime.Now;
 
-    public void UpdateProfile(EUserProfile profile) => Profile = profile;
+    public void UpdateProfile(EUserProfile profile)
+    {
+        Profile = profile;
+        UpdatedAt = DateTime.Now;
+    }
 }

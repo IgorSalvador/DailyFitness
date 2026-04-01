@@ -70,10 +70,13 @@ public class ProfessionalService(
 
         var professionalRequest = await professionalRequestRepository.GetWithUser(requestId, ct);
 
-        if(professionalRequest == null)
+        if(professionalRequest == null || professionalRequest.ProfessionalRequestStatus != EProfessionalRequestStatus.Pending)
             return ResultDto<ProfessionalRequestDto>.Fail("Falha de validação", ["Solicitação não encontrada"]);
 
         professionalRequest.SetAsEvaluated(evaluatorId, model.IsApproved, model.Comments);
+
+        if (professionalRequest.ProfessionalRequestStatus == EProfessionalRequestStatus.Approved)
+            professionalRequest.User.UpdateProfile(EUserProfile.Professional);
 
         professionalRequestRepository.Update(professionalRequest);
         await professionalRequestRepository.SaveChanges(ct);
