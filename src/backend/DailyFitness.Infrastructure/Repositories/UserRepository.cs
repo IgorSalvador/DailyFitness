@@ -48,6 +48,20 @@ public class UserRepository(AppDbContext context) : Repository<User>(context), I
                                       && x.Status == EntityStatus.Active, ct);
     }
 
+    public async Task<User?> GetProfessionalUser(Guid id, CancellationToken ct)
+    {
+        return await set
+            .Include(x => x.ProfessionalRequests)
+            .Where(x => x.Id == id
+                        && x.Profile == EUserProfile.Professional
+                        && x.Status == EntityStatus.Active
+                        && x.ProfessionalRequests != null
+                        && x.ProfessionalRequests.Any(y =>
+                            y.Status == EntityStatus.Active &&
+                            y.ProfessionalRequestStatus == EProfessionalRequestStatus.Approved))
+            .FirstOrDefaultAsync(ct);
+    }
+
     public async Task<List<User>> GetProfessionalUsers(CancellationToken ct)
     {
         return await set

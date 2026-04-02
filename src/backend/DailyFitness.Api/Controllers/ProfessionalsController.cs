@@ -28,6 +28,20 @@ public class ProfessionalsController(IProfessionalService professionalService) :
     }
 
     /// <summary>
+    /// Retrieves a specific professional asynchronously by their unique identifier.
+    /// Delegates the retrieval to the underlying service layer.
+    /// </summary>
+    /// <param name="id">The unique identifier of the professional to be retrieved.</param>
+    /// <param name="cancellationToken">A token that allows the operation to be cancelled.</param>
+    /// <returns>An <see cref="IActionResult"/> containing the result of the operation.</returns>
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await professionalService.Get(id, cancellationToken);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
     /// Creates a professional request asynchronously based on the provided request details.
     /// Delegates the creation process to the underlying service layer.
     /// </summary>
