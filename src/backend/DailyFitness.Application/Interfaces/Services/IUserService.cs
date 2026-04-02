@@ -10,4 +10,5 @@ public interface IUserService
     Task<ResultDto<LoginResultDto>> Authenticate(LoginDto model, CancellationToken cancellationToken);
     Task<ResultDto<string>> ResetPasswordRequest(ResetUserPasswordRequestDto model, string frontendUrl, CancellationToken cancellationToken);
     Task<ResultDto<UserDto>> ResetPassword(ResetUserPasswordDto model, CancellationToken cancellationToken);
+    Task<ResultDto<ProfileDto>> GetProfile(Guid userId, Guid loggedUserId, CancellationToken cancellationToken);
 }

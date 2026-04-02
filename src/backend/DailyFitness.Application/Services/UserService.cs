@@ -111,4 +111,16 @@ public class UserService(
 
         return ResultDto<UserDto>.Ok(UserDto.FromEntity(user), "Senha redefinida com sucesso");
     }
+
+    public async Task<ResultDto<ProfileDto>> GetProfile(Guid userId, Guid loggedUserId, CancellationToken cancellationToken)
+    {
+        if(userId != loggedUserId)
+            return ResultDto<ProfileDto>.Fail("Falha de validação", ["Acesso não autorizado!"]);
+
+        var user = await userRepository.Get(userId, cancellationToken);
+
+        return user is not null
+            ? ResultDto<ProfileDto>.Ok(ProfileDto.FromEntity(user), "Perfil obtido com sucesso")
+            : ResultDto<ProfileDto>.Fail("Falha de validação", ["Usuário não encontrado"]);
+    }
 }

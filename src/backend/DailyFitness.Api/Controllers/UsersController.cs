@@ -1,4 +1,5 @@
-﻿using DailyFitness.Api.Common.Extensions;
+﻿using System.Security.Claims;
+using DailyFitness.Api.Common.Extensions;
 using DailyFitness.Application.Dtos.Authentication;
 using DailyFitness.Application.Dtos.Users;
 using DailyFitness.Application.Interfaces.Services;
@@ -63,6 +64,15 @@ public class UsersController(IUserService userService) : ControllerBase
     public async Task<IActionResult> ResetPassword(ResetUserPasswordDto model, CancellationToken ct)
     {
         var result = await userService.ResetPassword(model, ct);
+        return result.ToActionResult(this);
+    }
+
+    [HttpGet("get-profile/{userId:guid}")]
+    public async Task<IActionResult> GetProfile(Guid userId, CancellationToken ct)
+    {
+        var loggedUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
+
+        var result = await userService.GetProfile(userId, loggedUserId, ct);
         return result.ToActionResult(this);
     }
 }
