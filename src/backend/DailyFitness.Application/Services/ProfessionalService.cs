@@ -1,5 +1,6 @@
 ﻿using DailyFitness.Application.Common.Results;
 using DailyFitness.Application.Dtos.Professional;
+using DailyFitness.Application.Dtos.Users;
 using DailyFitness.Application.Interfaces.Repositories;
 using DailyFitness.Application.Interfaces.Services;
 using DailyFitness.Application.Validators.Professional;
@@ -14,6 +15,15 @@ public class ProfessionalService(
     IEmailService emailService)
     : BaseService, IProfessionalService
 {
+    public async Task<ResultDto<IEnumerable<ProfessionalDto>>> Get(CancellationToken cancellationToken)
+    {
+        var professionals = await userRepository.GetProfessionalUsers(cancellationToken);
+
+        return professionals.Any() ?
+            ResultDto<IEnumerable<ProfessionalDto>>.Ok(professionals.Select(ProfessionalDto.FromEntity)) :
+            ResultDto<IEnumerable<ProfessionalDto>>.Fail("Nenhum profissional encontrado");
+    }
+
     public async Task<ResultDto<ProfessionalRequestDto>> CreateProfessionalRequest(CreateProfessionalRequestDto model, CancellationToken cancellationToken)
     {
         var validationResult = ExecuteValidation(new CreateProfessionalRequestDtoValidator(), model);
@@ -48,7 +58,7 @@ public class ProfessionalService(
         return ResultDto<ProfessionalRequestDto>.Ok(ProfessionalRequestDto.FromEntity(professionalRequest));
     }
 
-    public async Task<ResultDto<ProfessionalRequestDto>> Get(GetProfessionalRequestDto model, CancellationToken ct)
+    public async Task<ResultDto<ProfessionalRequestDto>> GetProfessionalRequest(GetProfessionalRequestDto model, CancellationToken ct)
     {
         var professionalRequestId = Guid.Parse(model.Id);
         var professionalRequest = await professionalRequestRepository.GetWithAll(professionalRequestId, ct);

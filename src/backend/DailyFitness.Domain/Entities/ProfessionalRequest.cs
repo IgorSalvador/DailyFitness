@@ -14,12 +14,14 @@ public class ProfessionalRequest : Entity
     public Guid? EvaluatorId { get; set; }
     public string? EvaluationComments { get; set; }
 
-    public User User { get; set; }
+    public User? User { get; set; }
     public User? Evaluator { get; set; }
 
     public ProfessionalRequest()
     {
-
+        Biography = string.Empty;
+        Specialization = string.Empty;
+        Skills = string.Empty;
     }
 
     public ProfessionalRequest(Guid userId, string biography, string specialization, string skills)

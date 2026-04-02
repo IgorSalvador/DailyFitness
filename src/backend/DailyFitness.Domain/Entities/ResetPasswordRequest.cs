@@ -8,11 +8,11 @@ public class ResetPasswordRequest : Entity
     public DateTime ValidUntil { get; set; }
     public Guid UserId { get; set; }
 
-    public User User { get; set; }
+    public User? User { get; set; }
 
     public ResetPasswordRequest()
     {
-
+        Token = string.Empty;
     }
 
     public ResetPasswordRequest(string token, Guid userId) : base()

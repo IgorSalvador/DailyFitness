@@ -11,6 +11,13 @@ namespace DailyFitness.Api.Controllers;
 [Route("[controller]")]
 public class ProfessionalsController(IProfessionalService professionalService) : ControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> Get(CancellationToken cancellationToken)
+    {
+        var result = await professionalService.Get(cancellationToken);
+        return result.ToActionResult(this);
+    }
+
     [HttpPost("create-request")]
     public async Task<IActionResult> CreateProfessionalRequest(CreateProfessionalRequestDto requestDto, CancellationToken cancellationToken)
     {
@@ -21,7 +28,7 @@ public class ProfessionalsController(IProfessionalService professionalService) :
     [HttpGet("get-request")]
     public async Task<IActionResult> GetProfessionalRequest([FromQuery] GetProfessionalRequestDto model, CancellationToken cancellationToken)
     {
-        var result = await professionalService.Get(model, cancellationToken);
+        var result = await professionalService.GetProfessionalRequest(model, cancellationToken);
         return result.ToActionResult(this);
     }
 

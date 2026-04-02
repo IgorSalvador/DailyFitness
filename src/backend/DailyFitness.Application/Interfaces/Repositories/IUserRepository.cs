@@ -9,4 +9,5 @@ public interface IUserRepository : IRepository<User>
     Task AddResetPasswordRequest(ResetPasswordRequest request, CancellationToken ct);
     Task<ResetPasswordRequest?> GetActiveResetPasswordRequestWithUserByToken(string token, CancellationToken ct);
     Task CancelActiveResetPasswordRequest(Guid userId, CancellationToken ct);
+    Task<List<User>> GetProfessionalUsers(CancellationToken ct);
 }

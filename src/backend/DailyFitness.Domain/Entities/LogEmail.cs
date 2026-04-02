@@ -21,7 +21,10 @@ public class LogEmail
 
     public LogEmail()
     {
-
+        Subject = string.Empty;
+        Recipients = string.Empty;
+        Body = string.Empty;
+        ErrorMessage = string.Empty;
     }
 
     public LogEmail(string subject, string recipients, string body, string errorMessage)
