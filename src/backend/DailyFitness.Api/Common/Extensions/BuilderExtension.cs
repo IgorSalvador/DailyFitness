@@ -58,10 +58,9 @@ public static class BuilderExtension
             {
                 options.AddPolicy(ApiConfiguration.CorsPolicyName, policy =>
                 {
-                    policy.WithOrigins(ApiConfiguration.FrontendUri)
-                        .WithMethods("GET", "POST", "PUT", "DELETE")
-                        .WithHeaders("Authorization", "Content-Type")
-                        .AllowCredentials();
+                    policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
                 });
             });
         }
