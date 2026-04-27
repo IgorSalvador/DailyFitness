@@ -47,6 +47,9 @@ public static class DependencyInjection
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ILogEmailRepository, LogEmailRepository>();
             services.AddScoped<IProfessionalRequestRepository, ProfessionalRequestRepository>();
+            services.AddScoped<IChallengeRepository, ChallengeRepository>();
+            services.AddScoped<IUserChallengeRepository, UserChallengeRepository>();
+            services.AddScoped<IUserChallengeProgressRepository, UserChallengeProgressRepository>();
         }
     }
 }

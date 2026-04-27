@@ -9,4 +9,5 @@ public interface IEmailService
     Task SendUserProfessionalRequestForAdministratorsEmail(List<string> administrators, CancellationToken ct);
     Task SendUserProfessionalRequestEmail(User user, CancellationToken ct);
     Task SendUserProfessionalRequestFeedbackEmail(ProfessionalRequest request, CancellationToken ct);
+    Task SendChallengeDiscontinuedEmail(string email, string firstName, string challengeName, CancellationToken ct);
 }

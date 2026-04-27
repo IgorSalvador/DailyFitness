@@ -15,6 +15,7 @@ public class User : Entity
     public ICollection<ResetPasswordRequest> ResetPasswordRequests { get; init; }
     public ICollection<ProfessionalRequest>? ProfessionalRequests { get; set; } = new List<ProfessionalRequest>();
     public ICollection<ProfessionalRequest>? EvaluatedProfessionalRequests { get; set; } = new List<ProfessionalRequest>();
+    public ICollection<UserChallenge>? UserChallenges { get; set; } = new List<UserChallenge>();
 
     public User()
     {

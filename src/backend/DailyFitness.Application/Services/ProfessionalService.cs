@@ -1,4 +1,4 @@
-﻿using DailyFitness.Application.Common.Results;
+using DailyFitness.Application.Common.Results;
 using DailyFitness.Application.Dtos.Professional;
 using DailyFitness.Application.Interfaces.Repositories;
 using DailyFitness.Application.Interfaces.Services;
@@ -72,11 +72,18 @@ public class ProfessionalService(
         return ResultDto<ProfessionalRequestDto>.Ok(ProfessionalRequestDto.FromEntity(professionalRequest));
     }
 
-    public async Task<ResultDto<ProfessionalRequestDto>> GetProfessionalRequest(GetProfessionalRequestDto model,
-        CancellationToken ct)
+    public async Task<ResultDto<IEnumerable<ProfessionalRequestDto>>> GetAllProfessionalRequests(CancellationToken ct)
     {
-        var professionalRequestId = Guid.Parse(model.Id);
-        var professionalRequest = await professionalRequestRepository.GetWithAll(professionalRequestId, ct);
+        var requests = await professionalRequestRepository.GetAllWithAll(ct);
+
+        return requests.Any()
+            ? ResultDto<IEnumerable<ProfessionalRequestDto>>.Ok(requests.Select(ProfessionalRequestDto.FromEntity))
+            : ResultDto<IEnumerable<ProfessionalRequestDto>>.Fail("Nenhuma solicitação encontrada");
+    }
+
+    public async Task<ResultDto<ProfessionalRequestDto>> GetProfessionalRequest(Guid id, CancellationToken ct)
+    {
+        var professionalRequest = await professionalRequestRepository.GetWithAll(id, ct);
 
         return professionalRequest is not null
             ? ResultDto<ProfessionalRequestDto>.Ok(ProfessionalRequestDto.FromEntity(professionalRequest))

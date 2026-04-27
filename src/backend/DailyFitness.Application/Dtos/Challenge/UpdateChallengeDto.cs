@@ -1,0 +1,12 @@
+using DailyFitness.Domain.ValueObjects;
+
+namespace DailyFitness.Application.Dtos.Challenge;
+
+public class UpdateChallengeDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DateTime ExpectedEndDate { get; set; }
+    public EChallengeType? Type { get; set; }
+    public EChallengeStatus? ChallengeStatus { get; set; }
+}

@@ -11,8 +11,9 @@ public interface IProfessionalService
     Task<ResultDto<ProfessionalRequestDto>> CreateProfessionalRequest(CreateProfessionalRequestDto model,
         CancellationToken cancellationToken);
 
-    Task<ResultDto<ProfessionalRequestDto>> GetProfessionalRequest(GetProfessionalRequestDto model,
-        CancellationToken ct);
+    Task<ResultDto<IEnumerable<ProfessionalRequestDto>>> GetAllProfessionalRequests(CancellationToken ct);
+
+    Task<ResultDto<ProfessionalRequestDto>> GetProfessionalRequest(Guid id, CancellationToken ct);
 
     Task<ResultDto<ProfessionalRequestDto>> EvaluateRequest(ProfessionalRequestEvaluationDto model,
         Guid evaluatorId, CancellationToken ct);

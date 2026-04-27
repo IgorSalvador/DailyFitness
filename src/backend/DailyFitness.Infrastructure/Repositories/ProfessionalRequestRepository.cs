@@ -22,4 +22,13 @@ public class ProfessionalRequestRepository (AppDbContext context)
             .Include(x => x.Evaluator)
             .FirstOrDefaultAsync(x => x.Id == id, ct);
     }
+
+    public async Task<IEnumerable<ProfessionalRequest>> GetAllWithAll(CancellationToken ct)
+    {
+        return await set
+            .Include(x => x.User)
+            .Include(x => x.Evaluator)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync(ct);
+    }
 }
