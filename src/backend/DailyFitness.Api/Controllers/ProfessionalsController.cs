@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using DailyFitness.Application.Dtos.Professional;
 using DailyFitness.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -57,17 +57,31 @@ public class ProfessionalsController(IProfessionalService professionalService) :
     }
 
     /// <summary>
-    /// Retrieves a professional request based on the specified criteria asynchronously.
-    /// Delegates processing to the service layer.
+    /// Retrieves all professional requests asynchronously.
+    /// This action is restricted to users with the "Administrator" role.
     /// </summary>
-    /// <param name="model">The data transfer object containing the criteria for retrieving the professional request.</param>
     /// <param name="cancellationToken">A token that allows the operation to be cancelled.</param>
     /// <returns>An <see cref="IActionResult"/> containing the result of the operation.</returns>
-    [HttpGet("get-request")]
-    public async Task<IActionResult> GetProfessionalRequest([FromQuery] GetProfessionalRequestDto model,
-        CancellationToken cancellationToken)
+    [Authorize(Roles = "Administrator")]
+    [HttpGet("get-requests")]
+    public async Task<IActionResult> GetAllProfessionalRequests(CancellationToken cancellationToken)
     {
-        var result = await professionalService.GetProfessionalRequest(model, cancellationToken);
+        var result = await professionalService.GetAllProfessionalRequests(cancellationToken);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Retrieves a specific professional request asynchronously by its unique identifier.
+    /// This action is restricted to users with the "Administrator" role.
+    /// </summary>
+    /// <param name="id">The unique identifier of the professional request to be retrieved.</param>
+    /// <param name="cancellationToken">A token that allows the operation to be cancelled.</param>
+    /// <returns>An <see cref="IActionResult"/> containing the result of the operation.</returns>
+    [Authorize(Roles = "Administrator")]
+    [HttpGet("get-requests/{id:guid}")]
+    public async Task<IActionResult> GetProfessionalRequest(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await professionalService.GetProfessionalRequest(id, cancellationToken);
         return result.ToActionResult(this);
     }
 

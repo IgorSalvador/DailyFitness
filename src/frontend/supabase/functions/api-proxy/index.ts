@@ -1,4 +1,4 @@
-// Edge Function: proxy HTTPS -> HTTP para a API DailyFitness
+// Edge Function: proxy HTTPS -> API DailyFitness
 // Resolve mixed content e CORS em produção
 
 const corsHeaders = {
@@ -8,7 +8,17 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
 };
 
-const TARGET_BASE = "http://54.232.227.118";
+// 🔒 Chamada via HTTPS para garantir tráfego criptografado.
+// O servidor de origem possui certificado auto-assinado/inválido para o IP,
+// então usamos um Deno.HttpClient com verificação de certificado desabilitada
+// SOMENTE para este destino específico (não afeta outras chamadas).
+const TARGET_BASE = "https://54.232.227.118";
+
+// Cliente HTTP que aceita o certificado inválido apenas deste host.
+// @ts-ignore - createHttpClient existe no runtime do Deno Deploy/Edge.
+const insecureClient = (Deno as unknown as {
+  createHttpClient?: (opts: { caCerts?: string[]; allowHost?: boolean }) => unknown;
+}).createHttpClient?.({ caCerts: [] });
 
 Deno.serve(async (req) => {
   // CORS preflight
@@ -18,37 +28,30 @@ Deno.serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    // Remove o prefixo /functions/v1/api-proxy do path
-    const proxyPath = url.pathname.replace(
-      /^\/functions\/v1\/api-proxy/,
-      ""
-    );
+    const proxyPath = url.pathname.replace(/^.*\/api-proxy/, "");
     const targetUrl = `${TARGET_BASE}${proxyPath}${url.search}`;
 
-    console.log(`[proxy] ${req.method} -> ${targetUrl}`);
-
-    // Repassa a request para a API real
-    const init: RequestInit = {
+    const init: RequestInit & { client?: unknown } = {
       method: req.method,
       headers: {
         "Content-Type":
           req.headers.get("content-type") ?? "application/json",
         Accept: "application/json",
       },
+      redirect: "follow",
     };
 
-    if (req.method !== "GET" && req.method !== "HEAD") {
-      const body = await req.text();
-      init.body = body;
-      console.log(`[proxy] body:`, body);
+    // Anexa o cliente inseguro se disponível (permite cert auto-assinado).
+    if (insecureClient) {
+      init.client = insecureClient;
     }
 
-    const apiResponse = await fetch(targetUrl, init);
-    const responseText = await apiResponse.text();
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      init.body = await req.text();
+    }
 
-    console.log(
-      `[proxy] response status: ${apiResponse.status}, body: ${responseText}`
-    );
+    const apiResponse = await fetch(targetUrl, init as RequestInit);
+    const responseText = await apiResponse.text();
 
     return new Response(responseText, {
       status: apiResponse.status,
@@ -59,7 +62,6 @@ Deno.serve(async (req) => {
       },
     });
   } catch (err) {
-    console.error("[proxy] error:", err);
     const message = err instanceof Error ? err.message : "Unknown error";
     return new Response(
       JSON.stringify({

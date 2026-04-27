@@ -6,4 +6,5 @@ public interface IProfessionalRequestRepository : IRepository<ProfessionalReques
 {
     Task<ProfessionalRequest?> GetWithUser(Guid id, CancellationToken ct);
     Task<ProfessionalRequest?> GetWithAll(Guid id, CancellationToken ct);
+    Task<IEnumerable<ProfessionalRequest>> GetAllWithAll(CancellationToken ct);
 }

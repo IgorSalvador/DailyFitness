@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Text.Json;
@@ -288,6 +288,41 @@ public class EmailService(
         var bodyHtml = BuildDefaultLayout(subject, body.ToString());
 
         await Send(EEmailType.UserProfessionalRequestFeedbackNotification, subject, [request.User.Email], bodyHtml, ct);
+    }
+
+    public async Task SendChallengeDiscontinuedEmail(string email, string firstName, string challengeName, CancellationToken ct)
+    {
+        const string subject = "Desafio descontinuado!";
+
+        var body = new StringBuilder();
+
+        #region Body
+
+        body.AppendLine($"<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">Olá, {firstName}!</p>");
+
+        body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
+        body.AppendLine($"O desafio <strong style=\"color:#5B21B6;\">{challengeName}</strong> no qual você estava participando foi <strong style=\"color:#111111;\">descontinuado</strong> pela plataforma.");
+        body.AppendLine("</p>");
+
+        body.AppendLine("<p style=\"margin:0 0 16px 0;font-size:16px;line-height:24px;color:#111111;\">");
+        body.AppendLine("Sua participação foi encerrada automaticamente e todo o seu histórico de progresso foi preservado.");
+        body.AppendLine("</p>");
+
+        body.AppendLine("<div style=\"margin:24px 0;padding:16px;border-left:4px solid #FFD54A;background-color:#FFF8DB;border-radius:8px;\">");
+        body.AppendLine("    <p style=\"margin:0;font-size:15px;line-height:22px;color:#111111;\">");
+        body.AppendLine("        <strong style=\"color:#5B21B6;\">O que isso significa?</strong> Você não poderá mais atualizar progresso neste desafio, mas pode continuar participando de outros desafios disponíveis na plataforma.");
+        body.AppendLine("    </p>");
+        body.AppendLine("</div>");
+
+        body.AppendLine("<p style=\"margin:0;font-size:14px;line-height:22px;color:#4B5563;\">");
+        body.AppendLine($"Conte com o <strong style=\"color:#5B21B6;\">Daily Fitness</strong> para apoiar sua evolução todos os dias.");
+        body.AppendLine("</p>");
+
+        #endregion
+
+        var bodyHtml = BuildDefaultLayout(subject, body.ToString());
+
+        await Send(EEmailType.ChallengeDiscontinuedNotification, subject, [email], bodyHtml, ct);
     }
 
     private async Task Send(EEmailType emailType, string subject, List<string> recipients, string body,

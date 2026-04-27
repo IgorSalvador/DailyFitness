@@ -10,6 +10,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<LogEmail> LogEmails => Set<LogEmail>();
     public DbSet<ResetPasswordRequest> ResetPasswordRequests => Set<ResetPasswordRequest>();
     public DbSet<ProfessionalRequest> ProfessionalRequests => Set<ProfessionalRequest>();
+    public DbSet<Challenge> Challenges => Set<Challenge>();
+    public DbSet<UserChallenge> UserChallenges => Set<UserChallenge>();
+    public DbSet<UserChallengeProgress> UserChallengeProgresses => Set<UserChallengeProgress>();
 
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

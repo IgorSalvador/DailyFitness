@@ -6,5 +6,6 @@ public enum EEmailType
     ResetPasswordNotification = 2,
     ProfessionalRequestAdminNotification = 3,
     UserProfessionalRequestNotification = 4,
-    UserProfessionalRequestFeedbackNotification = 5
+    UserProfessionalRequestFeedbackNotification = 5,
+    ChallengeDiscontinuedNotification = 6
 }
