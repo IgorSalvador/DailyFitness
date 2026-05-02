@@ -12,8 +12,14 @@ import ForgotPassword from "./pages/ForgotPassword.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import RoleProtectedRoute from "./components/RoleProtectedRoute.tsx";
 import PublicOnlyRoute from "./components/PublicOnlyRoute.tsx";
 import SessionExpiredDialog from "./components/SessionExpiredDialog.tsx";
+import ProfessionalsList from "./pages/professionals/ProfessionalsList.tsx";
+import ProfessionalDetail from "./pages/professionals/ProfessionalDetail.tsx";
+import CreateProfessionalRequest from "./pages/professionals/CreateProfessionalRequest.tsx";
+import ProfessionalRequestsList from "./pages/professionals/admin/ProfessionalRequestsList.tsx";
+import ProfessionalRequestDetail from "./pages/professionals/admin/ProfessionalRequestDetail.tsx";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +31,7 @@ const App = () => (
       <BrowserRouter>
         <SessionExpiredDialog />
         <Routes>
-          {/* Rotas privadas: exigem autenticação válida */}
+          {/* Rotas privadas: exigem autenticacao valida */}
           <Route
             path="/"
             element={
@@ -51,7 +57,49 @@ const App = () => (
             }
           />
 
-          {/* Rotas públicas: bloqueadas se já autenticado */}
+          {/* Profissionais */}
+          <Route
+            path="/profissionais"
+            element={
+              <ProtectedRoute>
+                <ProfessionalsList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profissionais/solicitar"
+            element={
+              <RoleProtectedRoute allowedRoles={["General"]}>
+                <CreateProfessionalRequest />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/profissionais/admin/solicitacoes"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ProfessionalRequestsList />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/profissionais/admin/solicitacoes/:id"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ProfessionalRequestDetail />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/profissionais/:id"
+            element={
+              <ProtectedRoute>
+                <ProfessionalDetail />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Rotas publicas: bloqueadas se ja autenticado */}
           <Route
             path="/login"
             element={
@@ -76,11 +124,9 @@ const App = () => (
               </PublicOnlyRoute>
             }
           />
-          {/* Reset-password permanece sempre acessível (pode vir de e-mail) */}
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
