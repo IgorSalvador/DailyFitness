@@ -17,6 +17,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+app.UsePathBase("/DailyFitness");
 app.UseGlobalExceptionHandler();
 
 // Configure the HTTP request pipeline.
