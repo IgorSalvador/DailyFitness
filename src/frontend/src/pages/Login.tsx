@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Dumbbell } from "lucide-react";
 import { loginUser } from "@/lib/api";
 import { saveAuth } from "@/lib/auth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || "/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +37,7 @@ const Login = () => {
       }
 
       saveAuth(token);
-      navigate("/", { replace: true });
+      navigate(from, { replace: true });
     } catch (err) {
       setError(
         err instanceof Error
@@ -56,7 +58,7 @@ const Login = () => {
             style={{ background: "var(--gradient-primary)" }}>
             <Dumbbell className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold gradient-text">FitLife</h1>
+          <h1 className="text-3xl font-bold gradient-text">Daily Fitness</h1>
           <p className="text-muted-foreground mt-2 text-sm">
             Entre na sua conta para continuar
           </p>
@@ -113,6 +115,14 @@ const Login = () => {
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
+              </div>
+              <div className="flex justify-end -mt-1">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Esqueci minha senha?
+                </Link>
               </div>
             </div>
 
