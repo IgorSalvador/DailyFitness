@@ -4,7 +4,7 @@
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-api-authorization",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
 };
 
@@ -31,13 +31,29 @@ Deno.serve(async (req) => {
     const proxyPath = url.pathname.replace(/^.*\/api-proxy/, "");
     const targetUrl = `${TARGET_BASE}${proxyPath}${url.search}`;
 
+    const forwardedHeaders: Record<string, string> = {
+      "Content-Type":
+        req.headers.get("content-type") ?? "application/json",
+      Accept: "application/json",
+    };
+
+    // Encaminha o JWT da API alvo enviado pelo cliente em "x-api-authorization".
+    // Não usamos o header "authorization" porque ele é consumido pela própria
+    // infraestrutura do Supabase Edge Function ao validar a invocação.
+    const apiAuth = req.headers.get("x-api-authorization");
+    if (apiAuth) {
+      forwardedHeaders["Authorization"] = apiAuth.startsWith("Bearer ")
+        ? apiAuth
+        : `Bearer ${apiAuth}`;
+    } else {
+      // Fallback: usa o Authorization padrão caso não venha o header dedicado.
+      const authHeader = req.headers.get("authorization");
+      if (authHeader) forwardedHeaders["Authorization"] = authHeader;
+    }
+
     const init: RequestInit & { client?: unknown } = {
       method: req.method,
-      headers: {
-        "Content-Type":
-          req.headers.get("content-type") ?? "application/json",
-        Accept: "application/json",
-      },
+      headers: forwardedHeaders,
       redirect: "follow",
     };
 

@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Home, Utensils, Dumbbell, Users, Trophy, Menu, X, LogOut, User } from "lucide-react";
+import { clearAuth, getUser } from "@/lib/auth";
 
 const navItems = [
   { label: "Home", icon: Home, href: "/", active: true },
@@ -10,14 +12,53 @@ const navItems = [
 ];
 
 const DashboardHeader = () => {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const profileWrapperRef = useRef<HTMLDivElement | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
+
+  const user = getUser();
+  const displayName = user?.name?.trim() || user?.email?.split("@")[0] || "Usuário";
+  const firstName = displayName.split(" ")[0];
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/login", { replace: true });
+  };
+
+  // Fecha ao clicar fora
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (
+        profileWrapperRef.current &&
+        !profileWrapperRef.current.contains(e.target as Node)
+      ) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  const openMenu = () => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setProfileOpen(true);
+  };
+
+  const scheduleClose = () => {
+    if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = window.setTimeout(() => setProfileOpen(false), 180);
+  };
 
   return (
     <header className="w-full max-w-6xl mx-auto mb-8">
       <div className="flex items-center justify-between py-4 border-b border-border">
         <h1 className="text-xl md:text-2xl font-semibold">
-          Olá, <span className="gradient-text">User</span>
+          Olá, <span className="gradient-text">{firstName}</span>
         </h1>
 
         {/* Desktop Nav */}
@@ -39,32 +80,66 @@ const DashboardHeader = () => {
         </nav>
 
         <div className="flex items-center gap-3">
-          {/* Avatar + Dropdown */}
-          <div className="relative">
+          {/* Avatar + Dropdown (hover + click) */}
+          <div
+            ref={profileWrapperRef}
+            className="relative"
+            onMouseEnter={openMenu}
+            onMouseLeave={scheduleClose}
+          >
             <button
-              onClick={() => setProfileOpen(!profileOpen)}
+              onClick={() => setProfileOpen((v) => !v)}
               className="flex items-center gap-3 group cursor-pointer"
+              aria-haspopup="menu"
+              aria-expanded={profileOpen}
             >
               <span className="hidden sm:block text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                Nome de User
+                {displayName}
               </span>
               <img
                 src="https://i.pravatar.cc/150?img=11"
-                alt="Avatar"
+                alt={displayName}
                 className="w-10 h-10 rounded-full ring-2 ring-border group-hover:ring-primary transition-all duration-300"
               />
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 top-14 glass-card rounded-xl p-2 min-w-[180px] z-50 animate-scale-in">
-                <a href="#" className="flex items-center gap-3 px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-all">
-                  <User size={16} />
-                  Perfil
-                </a>
-                <a href="#" className="flex items-center gap-3 px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-all">
-                  <LogOut size={16} />
-                  Sair
-                </a>
+              <div
+                role="menu"
+                className="absolute right-0 top-12 pt-2 z-50"
+                onMouseEnter={openMenu}
+                onMouseLeave={scheduleClose}
+              >
+                <div className="glass-card rounded-xl p-2 min-w-[220px] animate-scale-in shadow-lg">
+                  <div className="px-4 py-3 border-b border-border mb-1">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {displayName}
+                    </p>
+                    {user?.email && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user.email}
+                      </p>
+                    )}
+                  </div>
+                  <Link
+                    to="/perfil"
+                    role="menuitem"
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-all"
+                  >
+                    <User size={16} />
+                    Perfil
+                  </Link>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={handleLogout}
+                    className="w-full text-left flex items-center gap-3 px-4 py-3 text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-all"
+                  >
+                    <LogOut size={16} />
+                    Sair
+                  </button>
+                </div>
               </div>
             )}
           </div>

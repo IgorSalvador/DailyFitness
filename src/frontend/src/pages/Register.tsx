@@ -89,7 +89,7 @@ const Register = () => {
           >
             <Dumbbell className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold gradient-text">FitLife</h1>
+          <h1 className="text-3xl font-bold gradient-text">Daily Fitness</h1>
           <p className="text-muted-foreground mt-2 text-sm">
             Crie sua conta e comece agora
           </p>
