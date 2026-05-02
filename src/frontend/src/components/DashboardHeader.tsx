@@ -13,6 +13,7 @@ const baseNavItems = [
 
 const adminNavItems = [
   { label: "Solicitações", icon: ClipboardList, href: "/profissionais/admin/solicitacoes" },
+  { label: "Desafios (Admin)", icon: Trophy, href: "/desafios/admin" },
 ];
 
 const DashboardHeader = () => {

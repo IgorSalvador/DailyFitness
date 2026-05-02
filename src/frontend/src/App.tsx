@@ -20,6 +20,12 @@ import ProfessionalDetail from "./pages/professionals/ProfessionalDetail.tsx";
 import CreateProfessionalRequest from "./pages/professionals/CreateProfessionalRequest.tsx";
 import ProfessionalRequestsList from "./pages/professionals/admin/ProfessionalRequestsList.tsx";
 import ProfessionalRequestDetail from "./pages/professionals/admin/ProfessionalRequestDetail.tsx";
+import ChallengesList from "./pages/challenges/ChallengesList.tsx";
+import MyChallenges from "./pages/challenges/MyChallenges.tsx";
+import MyChallengeDetail from "./pages/challenges/MyChallengeDetail.tsx";
+import AdminChallengesList from "./pages/challenges/admin/AdminChallengesList.tsx";
+import CreateChallenge from "./pages/challenges/admin/CreateChallenge.tsx";
+import AdminChallengeDetail from "./pages/challenges/admin/AdminChallengeDetail.tsx";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +102,58 @@ const App = () => (
               <ProtectedRoute>
                 <ProfessionalDetail />
               </ProtectedRoute>
+            }
+          />
+
+          {/* Desafios — User */}
+          <Route
+            path="/desafios"
+            element={
+              <ProtectedRoute>
+                <ChallengesList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/desafios/meus"
+            element={
+              <ProtectedRoute>
+                <MyChallenges />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/desafios/meus/:userChallengeId"
+            element={
+              <ProtectedRoute>
+                <MyChallengeDetail />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Desafios — Admin */}
+          <Route
+            path="/desafios/admin"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <AdminChallengesList />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/desafios/admin/criar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <CreateChallenge />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/desafios/admin/:id"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <AdminChallengeDetail />
+              </RoleProtectedRoute>
             }
           />
 

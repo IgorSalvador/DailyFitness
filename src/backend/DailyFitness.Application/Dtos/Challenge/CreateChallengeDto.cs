@@ -1,4 +1,3 @@
-using DailyFitness.Domain.Entities;
 using DailyFitness.Domain.ValueObjects;
 
 namespace DailyFitness.Application.Dtos.Challenge;

@@ -88,7 +88,7 @@ async function parseApiResponse<T>(
 }
 
 export async function getProfessionals(): Promise<ApiResponse<ProfessionalDto[]>> {
-  const response = await fetch(`${API_BASE_URL}/DailyFitness/Professionals`, {
+  const response = await fetch(`${API_BASE_URL}/Professionals`, {
     method: "GET",
     headers: { "Content-Type": "application/json", ...getAuthHeader() },
   });
@@ -99,7 +99,7 @@ export async function getProfessionalById(
   id: string
 ): Promise<ApiResponse<ProfessionalDto>> {
   const response = await fetch(
-    `${API_BASE_URL}/DailyFitness/Professionals/${encodeURIComponent(id)}`,
+    `${API_BASE_URL}/Professionals/${encodeURIComponent(id)}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json", ...getAuthHeader() },
@@ -112,7 +112,7 @@ export async function createProfessionalRequest(
   payload: CreateProfessionalRequestPayload
 ): Promise<ApiResponse<ProfessionalRequestDto>> {
   const response = await fetch(
-    `${API_BASE_URL}/DailyFitness/Professionals/create-request`,
+    `${API_BASE_URL}/Professionals/create-request`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json", ...getAuthHeader() },
@@ -126,7 +126,7 @@ export async function getAllProfessionalRequests(): Promise<
   ApiResponse<ProfessionalRequestDto[]>
 > {
   const response = await fetch(
-    `${API_BASE_URL}/DailyFitness/Professionals/get-requests`,
+    `${API_BASE_URL}/Professionals/get-requests`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json", ...getAuthHeader() },
@@ -139,7 +139,7 @@ export async function getProfessionalRequestById(
   id: string
 ): Promise<ApiResponse<ProfessionalRequestDto>> {
   const response = await fetch(
-    `${API_BASE_URL}/DailyFitness/Professionals/get-requests/${encodeURIComponent(id)}`,
+    `${API_BASE_URL}/Professionals/get-requests/${encodeURIComponent(id)}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json", ...getAuthHeader() },
@@ -152,7 +152,7 @@ export async function evaluateProfessionalRequest(
   payload: EvaluateProfessionalRequestPayload
 ): Promise<ApiResponse<ProfessionalRequestDto>> {
   const response = await fetch(
-    `${API_BASE_URL}/DailyFitness/Professionals/evaluate-request`,
+    `${API_BASE_URL}/Professionals/evaluate-request`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json", ...getAuthHeader() },
