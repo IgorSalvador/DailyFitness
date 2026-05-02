@@ -18,13 +18,13 @@ builder.Services.AddInfrastructure(builder.Configuration);
 var app = builder.Build();
 
 app.UsePathBase("/DailyFitness");
+app.UseCrossOrigin();
 app.UseGlobalExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || builder.Configuration["IsDevelopment"] == "Y")
     app.ConfigureDevEnvironment();
 
-app.UseCrossOrigin();
 app.UseHttpsRedirection();
 app.UseAuth();
 app.MapControllers();
