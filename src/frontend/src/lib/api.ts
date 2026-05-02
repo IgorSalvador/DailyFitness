@@ -126,7 +126,7 @@ async function parseApiResponse<T>(
 export async function loginUser(data: LoginRequest): Promise<LoginResponse> {
   const payload = { email: data.email, password: data.password };
 
-  const response = await fetch(`${API_BASE_URL}/DailyFitness/Users/login`, {
+  const response = await fetch(`${API_BASE_URL}/Users/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -151,7 +151,7 @@ export async function loginUser(data: LoginRequest): Promise<LoginResponse> {
 export async function registerUser(
   data: RegisterRequest
 ): Promise<RegisterResponse> {
-  const response = await fetch(`${API_BASE_URL}/DailyFitness/Users/register`, {
+  const response = await fetch(`${API_BASE_URL}/Users/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -172,7 +172,7 @@ export async function forgotPassword(
   data: ForgotPasswordRequest
 ): Promise<ForgotPasswordResponse> {
   const response = await fetch(
-    `${API_BASE_URL}/DailyFitness/Users/forgot-password`,
+    `${API_BASE_URL}/Users/forgot-password`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -194,7 +194,7 @@ export async function resetPassword(
   data: ResetPasswordRequest
 ): Promise<ResetPasswordResponse> {
   const response = await fetch(
-    `${API_BASE_URL}/DailyFitness/Users/reset-password`,
+    `${API_BASE_URL}/Users/reset-password`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -214,7 +214,7 @@ export async function resetPassword(
 // 🔥 GET PROFILE - retorna informações do perfil autenticado
 export async function getProfile(userId: string): Promise<ProfileResponse> {
   const response = await fetch(
-    `${API_BASE_URL}/DailyFitness/Users/get-profile/${encodeURIComponent(userId)}`,
+    `${API_BASE_URL}/Users/get-profile/${encodeURIComponent(userId)}`,
     {
       method: "GET",
       headers: {
@@ -239,7 +239,7 @@ export async function updateProfile(
   data: UpdateProfileRequest
 ): Promise<UpdateProfileResponse> {
   const response = await fetch(
-    `${API_BASE_URL}/DailyFitness/Users/update-profile/${encodeURIComponent(userId)}`,
+    `${API_BASE_URL}/Users/update-profile/${encodeURIComponent(userId)}`,
     {
       method: "PUT",
       headers: {
