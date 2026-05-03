@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft, Loader2, AlertCircle, CheckCircle2, XCircle, Clock,
-  BookOpen, Briefcase, Tag, MessageSquare, User2, CalendarDays,
+  BookOpen, Briefcase, Tag, MessageSquare, User2, CalendarDays, Mail,
 } from "lucide-react";
 import DashboardHeader from "@/components/DashboardHeader";
 import {
@@ -123,6 +123,18 @@ const ProfessionalRequestDetail = () => {
               </div>
 
               <div className="h-px bg-border" />
+
+              <div className="rounded-xl border border-border bg-secondary/40 px-4 py-4 space-y-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-3">Solicitante</p>
+                <div className="flex items-center gap-2 text-sm">
+                  <User2 className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-foreground font-medium">{request.userName || "Não identificado"}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-muted-foreground">{request.userEmail}</span>
+                </div>
+              </div>
 
               <InfoSection icon={<Briefcase className="w-4 h-4" />} title="Especialização" content={request.specialization || "Não informado"} />
               <InfoSection icon={<BookOpen className="w-4 h-4" />} title="Biografia" content={request.biography || "Não informado"} multiline />

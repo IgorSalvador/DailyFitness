@@ -4,8 +4,6 @@ using DailyFitness.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.AddLogging();
 builder.AddConfiguration();
 builder.AddDocumentation();
@@ -21,7 +19,6 @@ app.UsePathBase("/DailyFitness");
 app.UseCrossOrigin();
 app.UseGlobalExceptionHandler();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || builder.Configuration["IsDevelopment"] == "Y")
     app.ConfigureDevEnvironment();
 

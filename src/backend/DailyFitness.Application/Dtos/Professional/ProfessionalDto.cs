@@ -1,4 +1,4 @@
-﻿using DailyFitness.Domain.Common;
+using DailyFitness.Domain.Common;
 using DailyFitness.Domain.Entities;
 
 namespace DailyFitness.Application.Dtos.Professional;
@@ -31,7 +31,7 @@ public class ProfessionalDto
         user.FirstName,
         user.Surname,
         user.Email,
-        user.ProfessionalRequests?.First().Biography ?? string.Empty,
-        user.ProfessionalRequests?.First().Specialization ?? string.Empty,
-        user.ProfessionalRequests?.First().Skills ?? string.Empty);
+        user.ProfessionalRequests?.First()?.Biography ?? string.Empty,
+        user.ProfessionalRequests?.First()?.Specialization ?? string.Empty,
+        user.ProfessionalRequests?.First()?.Skills ?? string.Empty);
 }

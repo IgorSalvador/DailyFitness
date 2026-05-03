@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Loader2, AlertCircle, RefreshCw, ClipboardList, Clock, CheckCircle2, XCircle, ChevronRight } from "lucide-react";
+import { ArrowLeft, Loader2, AlertCircle, RefreshCw, ClipboardList, Clock, CheckCircle2, XCircle, ChevronRight, User2, Mail } from "lucide-react";
 import DashboardHeader from "@/components/DashboardHeader";
 import { getAllProfessionalRequests, ProfessionalRequestDto, EProfessionalRequestStatus, ProfessionalRequestStatusLabel } from "@/lib/professionals-api";
 
@@ -125,9 +125,16 @@ const RequestRow = ({ request, statusIcon, statusStyle }: RequestRowProps) => {
       <div className="flex items-center gap-4 min-w-0">
         {statusIcon[status]}
         <div className="min-w-0">
-          <p className="text-sm font-medium text-foreground truncate">{request.specialization || "Especialização não informada"}</p>
-          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-            {request.biography?.slice(0, 80)}{(request.biography?.length ?? 0) > 80 ? "..." : ""}
+          <div className="flex items-center gap-1.5 min-w-0">
+            <User2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <p className="text-sm font-medium text-foreground truncate">{request.userName || "Usuário não identificado"}</p>
+          </div>
+          <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
+            <Mail className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <p className="text-xs text-muted-foreground truncate">{request.userEmail}</p>
+          </div>
+          <p className="text-xs text-muted-foreground/70 mt-1 line-clamp-1">
+            {request.specialization || "Especialização não informada"}
           </p>
         </div>
       </div>

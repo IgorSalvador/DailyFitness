@@ -16,6 +16,11 @@ public class UserRepository(AppDbContext context) : Repository<User>(context), I
         return await set.AnyAsync(x => x.Email.ToLower() == email.ToLower(), ct);
     }
 
+    public async Task<bool> EmailExistsForAnotherUser(string email, Guid excludeUserId, CancellationToken ct)
+    {
+        return await set.AnyAsync(x => x.Email.ToLower() == email.ToLower() && x.Id != excludeUserId, ct);
+    }
+
     public async Task<User?> GetByEmail(string email, CancellationToken ct)
     {
         return await set.FirstOrDefaultAsync(x => x.Email.ToLower() == email.ToLower(), ct);
