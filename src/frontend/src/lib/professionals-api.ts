@@ -33,6 +33,8 @@ export const ProfessionalRequestStatusLabel: Record<EProfessionalRequestStatus, 
 
 export interface ProfessionalRequestDto {
   id: string;
+  userName: string;
+  userEmail: string;
   biography: string;
   specialization: string;
   skills: string[];

@@ -1,4 +1,4 @@
-﻿using DailyFitness.Application.Common.Results;
+using DailyFitness.Application.Common.Results;
 using DailyFitness.Application.Dtos.Authentication;
 using DailyFitness.Application.Dtos.Users;
 using DailyFitness.Application.Interfaces.Repositories;
@@ -81,7 +81,7 @@ public class UserService(
 
         await userRepository.AddResetPasswordRequest(request, cancellationToken);
 
-        await emailService.SendResetPasswordEmail(user,$"{frontendUrl}/account/reset-password?token={request.Token}", cancellationToken);
+        await emailService.SendResetPasswordEmail(user,$"{frontendUrl}/reset-password?token={request.Token}", cancellationToken);
 
         return ResultDto<string>.Ok(request.Token, "Solicitação de redefinição de senha enviada com sucesso");
     }
@@ -122,5 +122,31 @@ public class UserService(
         return user is not null
             ? ResultDto<ProfileDto>.Ok(ProfileDto.FromEntity(user), "Perfil obtido com sucesso")
             : ResultDto<ProfileDto>.Fail("Falha de validação", ["Usuário não encontrado"]);
+    }
+
+    public async Task<ResultDto<ProfileDto>> UpdateProfile(Guid userId, Guid loggedUserId, UpdateProfileDto model, CancellationToken cancellationToken)
+    {
+        if(userId != loggedUserId)
+            return ResultDto<ProfileDto>.Fail("Falha de validação", ["Acesso não autorizado!"]);
+
+        var validationResult = ExecuteValidation(new UpdateProfileDtoValidator(), model);
+
+        if(!validationResult.IsValid)
+            return ResultDto<ProfileDto>.Fail("Falha de validação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+
+        var user = await userRepository.Get(userId, cancellationToken);
+
+        if(user == null)
+            return ResultDto<ProfileDto>.Fail("Falha de validação", ["Usuário não encontrado"]);
+
+        if(await userRepository.EmailExistsForAnotherUser(model.Email, userId, cancellationToken))
+            return ResultDto<ProfileDto>.Fail("Falha de validação", ["E-mail já está em uso por outro usuário"]);
+
+        user.UpdateEmail(model.Email);
+
+        userRepository.Update(user);
+        await userRepository.SaveChanges(cancellationToken);
+
+        return ResultDto<ProfileDto>.Ok(ProfileDto.FromEntity(user), "Perfil atualizado com sucesso");
     }
 }

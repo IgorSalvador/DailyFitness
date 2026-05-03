@@ -3,6 +3,7 @@ using DailyFitness.Api.Common.Extensions;
 using DailyFitness.Application.Dtos.Authentication;
 using DailyFitness.Application.Dtos.Users;
 using DailyFitness.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DailyFitness.Api.Controllers;
@@ -67,12 +68,23 @@ public class UsersController(IUserService userService) : ControllerBase
         return result.ToActionResult(this);
     }
 
+    [Authorize]
     [HttpGet("get-profile/{userId:guid}")]
     public async Task<IActionResult> GetProfile(Guid userId, CancellationToken ct)
     {
         var loggedUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
 
         var result = await userService.GetProfile(userId, loggedUserId, ct);
+        return result.ToActionResult(this);
+    }
+
+    [Authorize]
+    [HttpPut("update-profile/{userId:guid}")]
+    public async Task<IActionResult> UpdateProfile(Guid userId, UpdateProfileDto model, CancellationToken ct)
+    {
+        var loggedUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
+
+        var result = await userService.UpdateProfile(userId, loggedUserId, model, ct);
         return result.ToActionResult(this);
     }
 }

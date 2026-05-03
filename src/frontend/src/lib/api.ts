@@ -58,8 +58,6 @@ export interface ProfileData {
 export type ProfileResponse = ApiResponse<ProfileData>;
 
 export interface UpdateProfileRequest {
-  firstname: string;
-  surname: string;
   email: string;
 }
 

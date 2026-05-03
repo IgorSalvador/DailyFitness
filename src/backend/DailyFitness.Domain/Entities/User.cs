@@ -44,6 +44,12 @@ public class User : Entity
         Surname = surname;
     }
 
+    public void UpdateEmail(string email)
+    {
+        Email = email;
+        UpdatedAt = DateTime.Now;
+    }
+
     public void UpdatePassword(string passwordHash) => PasswordHash = passwordHash;
 
     public void UpdateLastLoginAt() => LastLoginAt = DateTime.Now;

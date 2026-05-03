@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2, Save, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Loader2, Save, AlertCircle, CheckCircle2, User as UserIcon, Mail, Lock } from "lucide-react";
 import DashboardHeader from "@/components/DashboardHeader";
 import { getProfile, updateProfile } from "@/lib/api";
-import { getToken, getUser, saveAuth } from "@/lib/auth";
+import { clearAuth, getUser } from "@/lib/auth";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -48,42 +48,29 @@ const EditProfile = () => {
     setError("");
     setSuccess("");
 
-    const fn = firstname.trim();
-    const sn = surname.trim();
     const em = email.trim();
 
-    if (!fn || !sn || !em) {
-      setError("Preencha todos os campos.");
+    if (!em) {
+      setError("O e-mail é obrigatório.");
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
-      setError("Email inválido.");
+      setError("E-mail inválido.");
       return;
     }
 
     setSaving(true);
     try {
-      const res = await updateProfile(authUser.id, {
-        firstname: fn,
-        surname: sn,
-        email: em,
-      });
+      await updateProfile(authUser.id, { email: em });
 
-      // Atualiza dados em cache (mantém o token atual)
-      const token = getToken();
-      if (token) {
-        saveAuth(token, {
-          ...authUser,
-          name: `${fn} ${sn}`.trim(),
-          email: em,
-        });
-      }
+      setSuccess("E-mail atualizado com sucesso! Você será redirecionado para o login.");
 
-      setSuccess(res.message || "Perfil atualizado com sucesso.");
-      setTimeout(() => navigate("/perfil"), 900);
+      setTimeout(() => {
+        clearAuth();
+        navigate("/login");
+      }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao atualizar perfil.");
-    } finally {
       setSaving(false);
     }
   };
@@ -104,7 +91,7 @@ const EditProfile = () => {
         <div className="glass-card rounded-2xl p-8">
           <h2 className="text-2xl font-semibold mb-1">Editar Perfil</h2>
           <p className="text-sm text-muted-foreground mb-6">
-            Atualize suas informações pessoais
+            Atualize seu endereço de e-mail
           </p>
 
           {loading ? (
@@ -114,30 +101,48 @@ const EditProfile = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
+
+              {/* Campos somente leitura */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field
+                <ReadOnlyField
                   label="Nome"
-                  value={firstname}
-                  onChange={setFirstname}
-                  placeholder="Seu nome"
-                  disabled={saving}
+                  value={firstname || "—"}
+                  icon={<UserIcon className="w-4 h-4" />}
                 />
-                <Field
+                <ReadOnlyField
                   label="Sobrenome"
-                  value={surname}
-                  onChange={setSurname}
-                  placeholder="Seu sobrenome"
-                  disabled={saving}
+                  value={surname || "—"}
+                  icon={<UserIcon className="w-4 h-4" />}
                 />
               </div>
-              <Field
-                label="E-mail"
-                type="email"
-                value={email}
-                onChange={setEmail}
-                placeholder="voce@email.com"
-                disabled={saving}
-              />
+
+              <div className="h-px bg-border" />
+
+              {/* Campo editável */}
+              <div>
+                <label className="block">
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1.5">
+                    <Mail className="w-3.5 h-3.5" />
+                    Novo e-mail
+                  </span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="voce@email.com"
+                    disabled={saving}
+                    autoComplete="email"
+                    className="w-full rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all disabled:opacity-60"
+                  />
+                </label>
+              </div>
+
+              <div className="rounded-xl border border-border bg-secondary/20 px-4 py-3 flex items-start gap-2 text-xs text-muted-foreground">
+                <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>
+                  Ao alterar o e-mail, sua sessão será encerrada e você precisará fazer login novamente com o novo endereço.
+                </span>
+              </div>
 
               {error && (
                 <div className="rounded-xl bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm text-destructive flex items-start gap-3">
@@ -165,7 +170,7 @@ const EditProfile = () => {
                   ) : (
                     <Save className="w-4 h-4" />
                   )}
-                  {saving ? "Salvando..." : "Salvar alterações"}
+                  {saving ? "Salvando..." : "Salvar e-mail"}
                 </button>
                 <Link
                   to="/perfil"
@@ -182,27 +187,20 @@ const EditProfile = () => {
   );
 };
 
-interface FieldProps {
+interface ReadOnlyFieldProps {
   label: string;
   value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  type?: string;
-  disabled?: boolean;
+  icon: React.ReactNode;
 }
 
-const Field = ({ label, value, onChange, placeholder, type = "text", disabled }: FieldProps) => (
-  <label className="block">
-    <span className="block text-xs text-muted-foreground mb-1.5">{label}</span>
-    <input
-      type={type}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      disabled={disabled}
-      className="w-full rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all disabled:opacity-60"
-    />
-  </label>
+const ReadOnlyField = ({ label, value, icon }: ReadOnlyFieldProps) => (
+  <div className="rounded-xl border border-border bg-secondary/20 px-4 py-3 opacity-70">
+    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+      {icon}
+      <span>{label}</span>
+    </div>
+    <p className="text-sm text-foreground">{value}</p>
+  </div>
 );
 
 export default EditProfile;
