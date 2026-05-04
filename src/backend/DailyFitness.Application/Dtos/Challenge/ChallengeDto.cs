@@ -15,6 +15,7 @@ public class ChallengeDto
     public bool IsExpired { get; set; }
     public int ParticipantCount { get; set; }
     public int ActiveParticipantCount { get; set; }
+    public string? CreatedById { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
@@ -30,6 +31,7 @@ public class ChallengeDto
         IsExpired = challenge.IsExpired(),
         ParticipantCount = challenge.UserChallenges?.Count ?? 0,
         ActiveParticipantCount = challenge.UserChallenges?.Count(x => x.UserChallengeStatus == EUserChallengeStatus.Active) ?? 0,
+        CreatedById = challenge.CreatedBy?.ToString(),
         CreatedAt = challenge.CreatedAt,
         UpdatedAt = challenge.UpdatedAt
     };

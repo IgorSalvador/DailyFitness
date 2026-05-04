@@ -26,6 +26,9 @@ import MyChallengeDetail from "./pages/challenges/MyChallengeDetail.tsx";
 import AdminChallengesList from "./pages/challenges/admin/AdminChallengesList.tsx";
 import CreateChallenge from "./pages/challenges/admin/CreateChallenge.tsx";
 import AdminChallengeDetail from "./pages/challenges/admin/AdminChallengeDetail.tsx";
+import ProfessionalChallengesList from "./pages/challenges/professional/ProfessionalChallengesList.tsx";
+import CreateProfessionalChallenge from "./pages/challenges/professional/CreateProfessionalChallenge.tsx";
+import ProfessionalChallengeDetail from "./pages/challenges/professional/ProfessionalChallengeDetail.tsx";
 
 const queryClient = new QueryClient();
 
@@ -153,6 +156,32 @@ const App = () => (
             element={
               <RoleProtectedRoute allowedRoles={["Administrator"]}>
                 <AdminChallengeDetail />
+              </RoleProtectedRoute>
+            }
+          />
+
+          {/* Desafios — Professional */}
+          <Route
+            path="/desafios/profissional"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ProfessionalChallengesList />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/desafios/profissional/criar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <CreateProfessionalChallenge />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/desafios/profissional/:id"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ProfessionalChallengeDetail />
               </RoleProtectedRoute>
             }
           />

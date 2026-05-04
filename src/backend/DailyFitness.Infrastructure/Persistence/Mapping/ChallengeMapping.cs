@@ -35,9 +35,19 @@ public class ChallengeMapping : IEntityTypeConfiguration<Challenge>
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
+        builder.Property(x => x.CreatedBy)
+            .IsRequired(false);
+
+        builder.HasOne(x => x.Creator)
+            .WithMany()
+            .HasForeignKey(x => x.CreatedBy)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasIndex(x => x.Type);
         builder.HasIndex(x => x.ChallengeStatus);
         builder.HasIndex(x => x.ExpectedEndDate);
         builder.HasIndex(x => x.Status);
+        builder.HasIndex(x => x.CreatedBy);
     }
 }

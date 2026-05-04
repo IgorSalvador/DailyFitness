@@ -8,4 +8,6 @@ public interface IChallengeRepository : IRepository<Challenge>
     Task<IEnumerable<Challenge>> GetAllWithParticipants(CancellationToken ct);
     Task<IEnumerable<Challenge>> GetAvailableForUser(Guid userId, CancellationToken ct);
     Task<bool> HasParticipants(Guid challengeId, CancellationToken ct);
+    Task<IEnumerable<Challenge>> GetByCreator(Guid creatorId, CancellationToken ct);
+    Task<Challenge?> GetWithParticipantsByCreator(Guid id, Guid creatorId, CancellationToken ct);
 }

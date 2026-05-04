@@ -121,6 +121,99 @@ public class ChallengeService(
         return ResultDto<IEnumerable<UserChallengeDto>>.Ok(participants.Select(UserChallengeDto.FromEntity));
     }
 
+    // ── Professional ─────────────────────────────────────────────────────────
+
+    public async Task<ResultDto<ChallengeDto>> CreateManagedChallenge(CreateChallengeDto model, Guid creatorId, CancellationToken ct)
+    {
+        var validationResult = ExecuteValidation(new CreateChallengeDtoValidator(), model);
+
+        if (!validationResult.IsValid)
+            return ResultDto<ChallengeDto>.Fail("Falha de validação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+
+        var challenge = model.ToEntity(creatorId);
+
+        challengeRepository.Add(challenge);
+        await challengeRepository.SaveChanges(ct);
+
+        return ResultDto<ChallengeDto>.Ok(ChallengeDto.FromEntity(challenge), "Desafio criado com sucesso!");
+    }
+
+    public async Task<ResultDto<IEnumerable<ChallengeDto>>> GetManagedChallenges(Guid creatorId, CancellationToken ct)
+    {
+        var challenges = await challengeRepository.GetByCreator(creatorId, ct);
+
+        return ResultDto<IEnumerable<ChallengeDto>>.Ok(challenges.Select(ChallengeDto.FromEntity));
+    }
+
+    public async Task<ResultDto<ChallengeDto>> GetManagedChallenge(Guid id, Guid creatorId, CancellationToken ct)
+    {
+        var challenge = await challengeRepository.GetWithParticipantsByCreator(id, creatorId, ct);
+
+        return challenge is not null
+            ? ResultDto<ChallengeDto>.Ok(ChallengeDto.FromEntity(challenge))
+            : ResultDto<ChallengeDto>.Fail("Desafio não encontrado ou sem permissão de acesso.");
+    }
+
+    public async Task<ResultDto<ChallengeDto>> UpdateManagedChallenge(Guid id, UpdateChallengeDto model, Guid creatorId, CancellationToken ct)
+    {
+        var validationResult = ExecuteValidation(new UpdateChallengeDtoValidator(), model);
+
+        if (!validationResult.IsValid)
+            return ResultDto<ChallengeDto>.Fail("Falha de validação", validationResult.Errors.Select(x => x.ErrorMessage).ToList());
+
+        var challenge = await challengeRepository.GetWithParticipantsByCreator(id, creatorId, ct);
+
+        if (challenge is null)
+            return ResultDto<ChallengeDto>.Fail("Falha de validação", ["Desafio não encontrado ou sem permissão de acesso."]);
+
+        if (model.Type.HasValue && model.Type.Value != challenge.Type)
+        {
+            var hasParticipants = await challengeRepository.HasParticipants(id, ct);
+
+            if (hasParticipants)
+                return ResultDto<ChallengeDto>.Fail("Falha de validação", ["Não é possível alterar o tipo do desafio com participantes vinculados."]);
+        }
+
+        challenge.Update(model.Name, model.Description, model.ExpectedEndDate, model.Type, model.ChallengeStatus);
+
+        challengeRepository.Update(challenge);
+        await challengeRepository.SaveChanges(ct);
+
+        return ResultDto<ChallengeDto>.Ok(ChallengeDto.FromEntity(challenge), "Desafio atualizado com sucesso!");
+    }
+
+    public async Task<ResultDto<ChallengeDto>> DiscontinueManagedChallenge(Guid id, Guid creatorId, CancellationToken ct)
+    {
+        var challenge = await challengeRepository.GetWithParticipantsByCreator(id, creatorId, ct);
+
+        if (challenge is null)
+            return ResultDto<ChallengeDto>.Fail("Falha de validação", ["Desafio não encontrado ou sem permissão de acesso."]);
+
+        if (challenge.ChallengeStatus == EChallengeStatus.Discontinued)
+            return ResultDto<ChallengeDto>.Fail("Falha de validação", ["Desafio já está descontinuado."]);
+
+        var activeParticipations = await userChallengeRepository.GetActiveByChallenge(id, ct);
+
+        foreach (var participation in activeParticipations)
+        {
+            participation.Discontinue();
+            userChallengeRepository.Update(participation);
+        }
+
+        challenge.Discontinue();
+        challengeRepository.Update(challenge);
+        await challengeRepository.SaveChanges(ct);
+
+        var notificationTasks = activeParticipations
+            .Where(p => p.User is not null)
+            .Select(p => emailService.SendChallengeDiscontinuedEmail(
+                p.User!.Email, p.User.FirstName, challenge.Name, ct));
+
+        await Task.WhenAll(notificationTasks);
+
+        return ResultDto<ChallengeDto>.Ok(ChallengeDto.FromEntity(challenge), "Desafio descontinuado com sucesso!");
+    }
+
     // ── User ─────────────────────────────────────────────────────────────────
 
     public async Task<ResultDto<IEnumerable<ChallengeDto>>> GetAvailableChallenges(Guid userId, CancellationToken ct)

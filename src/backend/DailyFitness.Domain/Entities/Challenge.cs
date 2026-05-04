@@ -11,7 +11,10 @@ public class Challenge : Entity
     public EChallengeStatus ChallengeStatus { get; private set; }
     public DateTime ExpectedEndDate { get; private set; }
 
+    public Guid? CreatedBy { get; private set; }
+
     public ICollection<UserChallenge> UserChallenges { get; init; }
+    public User? Creator { get; set; }
 
     public Challenge()
     {
@@ -20,13 +23,14 @@ public class Challenge : Entity
         UserChallenges = new List<UserChallenge>();
     }
 
-    public Challenge(string name, string description, EChallengeType type, DateTime expectedEndDate)
+    public Challenge(string name, string description, EChallengeType type, DateTime expectedEndDate, Guid? createdBy = null)
     {
         Name = name;
         Description = description;
         Type = type;
         ExpectedEndDate = expectedEndDate;
         ChallengeStatus = EChallengeStatus.Active;
+        CreatedBy = createdBy;
         UserChallenges = new List<UserChallenge>();
     }
 

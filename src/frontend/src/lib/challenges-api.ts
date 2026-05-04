@@ -59,6 +59,7 @@ export interface ChallengeDto {
   isExpired: boolean;
   participantCount: number;
   activeParticipantCount: number;
+  createdById: string | null;
   createdAt: string;
   updatedAt: string | null;
 }
@@ -302,4 +303,53 @@ export async function leaveChallenge(
     }
   );
   return parseApiResponse<UserChallengeDto>(response, "leaveChallenge");
+}
+
+// ── Professional ───────────────────────────────────────────────────────────────
+
+export async function getManagedChallenges(): Promise<ApiResponse<ChallengeDto[]>> {
+  const response = await fetch(`${BASE}/managed`, {
+    method: "GET",
+    headers: HEADERS(),
+  });
+  return parseApiResponse<ChallengeDto[]>(response, "getManagedChallenges");
+}
+
+export async function getManagedChallengeById(id: string): Promise<ApiResponse<ChallengeDto>> {
+  const response = await fetch(`${BASE}/managed/${encodeURIComponent(id)}`, {
+    method: "GET",
+    headers: HEADERS(),
+  });
+  return parseApiResponse<ChallengeDto>(response, "getManagedChallengeById");
+}
+
+export async function createManagedChallenge(
+  payload: CreateChallengePayload
+): Promise<ApiResponse<ChallengeDto>> {
+  const response = await fetch(`${BASE}/managed`, {
+    method: "POST",
+    headers: HEADERS(),
+    body: JSON.stringify(payload),
+  });
+  return parseApiResponse<ChallengeDto>(response, "createManagedChallenge");
+}
+
+export async function updateManagedChallenge(
+  id: string,
+  payload: UpdateChallengePayload
+): Promise<ApiResponse<ChallengeDto>> {
+  const response = await fetch(`${BASE}/managed/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    headers: HEADERS(),
+    body: JSON.stringify(payload),
+  });
+  return parseApiResponse<ChallengeDto>(response, "updateManagedChallenge");
+}
+
+export async function discontinueManagedChallenge(id: string): Promise<ApiResponse<ChallengeDto>> {
+  const response = await fetch(`${BASE}/managed/${encodeURIComponent(id)}/discontinue`, {
+    method: "PATCH",
+    headers: HEADERS(),
+  });
+  return parseApiResponse<ChallengeDto>(response, "discontinueManagedChallenge");
 }

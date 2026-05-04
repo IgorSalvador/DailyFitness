@@ -169,4 +169,72 @@ public class ChallengesController(IChallengeService challengeService) : Controll
         var result = await challengeService.LeaveChallenge(userChallengeId, userId, ct);
         return result.ToActionResult(this);
     }
+
+    // ── Professional ─────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Lists all challenges created by the authenticated professional.
+    /// </summary>
+    [Authorize(Roles = "Professional")]
+    [HttpGet("managed")]
+    public async Task<IActionResult> GetManagedChallenges(CancellationToken ct)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
+
+        var result = await challengeService.GetManagedChallenges(userId, ct);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Retrieves a specific challenge created by the authenticated professional.
+    /// </summary>
+    [Authorize(Roles = "Professional")]
+    [HttpGet("managed/{id:guid}")]
+    public async Task<IActionResult> GetManagedChallenge(Guid id, CancellationToken ct)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
+
+        var result = await challengeService.GetManagedChallenge(id, userId, ct);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Creates a new challenge as the authenticated professional.
+    /// </summary>
+    [Authorize(Roles = "Professional")]
+    [HttpPost("managed")]
+    public async Task<IActionResult> CreateManagedChallenge(CreateChallengeDto model, CancellationToken ct)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
+
+        var result = await challengeService.CreateManagedChallenge(model, userId, ct);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Updates a challenge created by the authenticated professional.
+    /// </summary>
+    [Authorize(Roles = "Professional")]
+    [HttpPut("managed/{id:guid}")]
+    public async Task<IActionResult> UpdateManagedChallenge(Guid id, UpdateChallengeDto model, CancellationToken ct)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
+
+        var result = await challengeService.UpdateManagedChallenge(id, model, userId, ct);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// Discontinues a challenge created by the authenticated professional,
+    /// notifying all active participants.
+    /// </summary>
+    [Authorize(Roles = "Professional")]
+    [HttpPatch("managed/{id:guid}/discontinue")]
+    public async Task<IActionResult> DiscontinueManagedChallenge(Guid id, CancellationToken ct)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
+
+        var result = await challengeService.DiscontinueManagedChallenge(id, userId, ct);
+        return result.ToActionResult(this);
+    }
 }
