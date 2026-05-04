@@ -9,5 +9,5 @@ public class CreateChallengeDto
     public EChallengeType Type { get; set; }
     public DateTime ExpectedEndDate { get; set; }
 
-    public Domain.Entities.Challenge ToEntity() => new(Name, Description, Type, ExpectedEndDate);
+    public Domain.Entities.Challenge ToEntity(Guid? createdBy = null) => new(Name, Description, Type, ExpectedEndDate, createdBy);
 }

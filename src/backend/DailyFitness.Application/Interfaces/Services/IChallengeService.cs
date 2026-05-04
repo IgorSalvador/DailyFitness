@@ -13,6 +13,13 @@ public interface IChallengeService
     Task<ResultDto<ChallengeDto>> DiscontinueChallenge(Guid id, CancellationToken ct);
     Task<ResultDto<IEnumerable<UserChallengeDto>>> GetChallengeParticipants(Guid challengeId, CancellationToken ct);
 
+    // Professional
+    Task<ResultDto<ChallengeDto>> CreateManagedChallenge(CreateChallengeDto model, Guid creatorId, CancellationToken ct);
+    Task<ResultDto<IEnumerable<ChallengeDto>>> GetManagedChallenges(Guid creatorId, CancellationToken ct);
+    Task<ResultDto<ChallengeDto>> GetManagedChallenge(Guid id, Guid creatorId, CancellationToken ct);
+    Task<ResultDto<ChallengeDto>> UpdateManagedChallenge(Guid id, UpdateChallengeDto model, Guid creatorId, CancellationToken ct);
+    Task<ResultDto<ChallengeDto>> DiscontinueManagedChallenge(Guid id, Guid creatorId, CancellationToken ct);
+
     // User
     Task<ResultDto<IEnumerable<ChallengeDto>>> GetAvailableChallenges(Guid userId, CancellationToken ct);
     Task<ResultDto<UserChallengeDto>> JoinChallenge(Guid challengeId, Guid userId, CancellationToken ct);

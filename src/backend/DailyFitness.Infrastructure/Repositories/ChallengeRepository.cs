@@ -46,4 +46,20 @@ public class ChallengeRepository(AppDbContext context) : Repository<Challenge>(c
         return await set
             .AnyAsync(x => x.Id == challengeId && x.UserChallenges.Any(), ct);
     }
+
+    public async Task<IEnumerable<Challenge>> GetByCreator(Guid creatorId, CancellationToken ct)
+    {
+        return await set
+            .Include(x => x.UserChallenges)
+            .Where(x => x.CreatedBy == creatorId)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync(ct);
+    }
+
+    public async Task<Challenge?> GetWithParticipantsByCreator(Guid id, Guid creatorId, CancellationToken ct)
+    {
+        return await set
+            .Include(x => x.UserChallenges)
+            .FirstOrDefaultAsync(x => x.Id == id && x.CreatedBy == creatorId, ct);
+    }
 }
