@@ -19,6 +19,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<UserTrainingPlan> UserTrainingPlans => Set<UserTrainingPlan>();
     public DbSet<UserTrainingProgress> UserTrainingProgresses => Set<UserTrainingProgress>();
     public DbSet<UserTrainingWorkoutDailyLog> UserTrainingWorkoutDailyLogs => Set<UserTrainingWorkoutDailyLog>();
+    public DbSet<DietPlan> DietPlans => Set<DietPlan>();
+    public DbSet<DietMeal> DietMeals => Set<DietMeal>();
+    public DbSet<DietMealItem> DietMealItems => Set<DietMealItem>();
+    public DbSet<UserDietPlan> UserDietPlans => Set<UserDietPlan>();
+    public DbSet<UserDietProgress> UserDietProgresses => Set<UserDietProgress>();
+    public DbSet<UserDietMealDailyLog> UserDietMealDailyLogs => Set<UserDietMealDailyLog>();
 
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
