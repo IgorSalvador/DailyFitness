@@ -20,6 +20,7 @@ public static class DependencyInjection
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProfessionalService, ProfessionalService>();
             services.AddScoped<IChallengeService, ChallengeService>();
+            services.AddScoped<ITrainingPlanService, TrainingPlanService>();
         }
 
         private void AddValidation()
