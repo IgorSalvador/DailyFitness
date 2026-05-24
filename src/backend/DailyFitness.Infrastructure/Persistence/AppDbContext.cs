@@ -13,6 +13,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Challenge> Challenges => Set<Challenge>();
     public DbSet<UserChallenge> UserChallenges => Set<UserChallenge>();
     public DbSet<UserChallengeProgress> UserChallengeProgresses => Set<UserChallengeProgress>();
+    public DbSet<TrainingPlan> TrainingPlans => Set<TrainingPlan>();
+    public DbSet<TrainingWorkout> TrainingWorkouts => Set<TrainingWorkout>();
+    public DbSet<TrainingWorkoutItem> TrainingWorkoutItems => Set<TrainingWorkoutItem>();
+    public DbSet<UserTrainingPlan> UserTrainingPlans => Set<UserTrainingPlan>();
+    public DbSet<UserTrainingProgress> UserTrainingProgresses => Set<UserTrainingProgress>();
+    public DbSet<UserTrainingWorkoutDailyLog> UserTrainingWorkoutDailyLogs => Set<UserTrainingWorkoutDailyLog>();
 
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

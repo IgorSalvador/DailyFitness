@@ -29,6 +29,13 @@ import AdminChallengeDetail from "./pages/challenges/admin/AdminChallengeDetail.
 import ProfessionalChallengesList from "./pages/challenges/professional/ProfessionalChallengesList.tsx";
 import CreateProfessionalChallenge from "./pages/challenges/professional/CreateProfessionalChallenge.tsx";
 import ProfessionalChallengeDetail from "./pages/challenges/professional/ProfessionalChallengeDetail.tsx";
+import TrainingPlansList from "./pages/training-plans/TrainingPlansList.tsx";
+import TrainingPlanDetail from "./pages/training-plans/TrainingPlanDetail.tsx";
+import MyTrainingPlan from "./pages/training-plans/MyTrainingPlan.tsx";
+import TrainingPlanHistory from "./pages/training-plans/TrainingPlanHistory.tsx";
+import ManagementTrainingPlansList from "./pages/training-plans/management/ManagementTrainingPlansList.tsx";
+import ManagementTrainingPlanForm from "./pages/training-plans/management/ManagementTrainingPlanForm.tsx";
+import ManagementTrainingPlanDetail from "./pages/training-plans/management/ManagementTrainingPlanDetail.tsx";
 
 const queryClient = new QueryClient();
 
@@ -182,6 +189,108 @@ const App = () => (
             element={
               <RoleProtectedRoute allowedRoles={["Professional"]}>
                 <ProfessionalChallengeDetail />
+              </RoleProtectedRoute>
+            }
+          />
+
+          {/* Planos de Treino — User */}
+          <Route
+            path="/treinos"
+            element={
+              <ProtectedRoute>
+                <TrainingPlansList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/treinos/meu-plano"
+            element={
+              <ProtectedRoute>
+                <MyTrainingPlan />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/treinos/historico"
+            element={
+              <ProtectedRoute>
+                <TrainingPlanHistory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/treinos/:id"
+            element={
+              <ProtectedRoute>
+                <TrainingPlanDetail />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Planos de Treino — Admin */}
+          <Route
+            path="/treinos/gestao"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ManagementTrainingPlansList />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/treinos/gestao/criar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ManagementTrainingPlanForm />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/treinos/gestao/:id"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ManagementTrainingPlanDetail />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/treinos/gestao/:id/editar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ManagementTrainingPlanForm />
+              </RoleProtectedRoute>
+            }
+          />
+
+          {/* Planos de Treino — Professional */}
+          <Route
+            path="/treinos/profissional"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ManagementTrainingPlansList />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/treinos/profissional/criar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ManagementTrainingPlanForm />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/treinos/profissional/:id"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ManagementTrainingPlanDetail />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/treinos/profissional/:id/editar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ManagementTrainingPlanForm />
               </RoleProtectedRoute>
             }
           />
