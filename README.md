@@ -1,6 +1,6 @@
 # Daily Fitness
 
-Projeto de prática profissional voltado ao segmento fitness, com o objetivo de centralizar em uma única plataforma serviços relacionados à saúde, bem-estar, desafios, solicitações de acesso como profissional fitness e autenticação segura.
+Projeto de prática profissional voltado ao segmento fitness, com o objetivo de centralizar em uma única plataforma serviços relacionados à saúde, bem-estar, desafios, planos de treino, planos alimentares, solicitações de acesso como profissional fitness e autenticação segura.
 
 ---
 
@@ -13,13 +13,13 @@ Projeto de prática profissional voltado ao segmento fitness, com o objetivo de 
 5. [Configuração do SMTP com Gmail](#5-configuração-do-smtp-com-gmail)
 6. [Restore e Build do Backend](#6-restore-e-build-do-backend)
 7. [Instalação do dotnet-ef](#7-instalação-do-dotnet-ef)
-8. [Aplicação das Migrations Existentes](#8-aplicação-das-migrations-existentes)
+8. [Aplicação das Migrations](#8-aplicação-das-migrations)
 9. [Execução do Backend](#9-execução-do-backend)
 10. [Configuração do Frontend React](#10-configuração-do-frontend-react)
 11. [Instalação dos node_modules](#11-instalação-dos-node_modules)
 12. [Execução do Frontend](#12-execução-do-frontend)
 13. [Fluxo Básico para Testar a Aplicação](#13-fluxo-básico-para-testar-a-aplicação)
-14. [Teste de Rotas Administrativas](#14-teste-de-rotas-administrativas)
+14. [Perfis de Usuário](#14-perfis-de-usuário)
 15. [Troubleshooting](#15-troubleshooting)
 16. [Segurança e Boas Práticas](#16-segurança-e-boas-práticas)
 
@@ -27,7 +27,7 @@ Projeto de prática profissional voltado ao segmento fitness, com o objetivo de 
 
 ## 1. Visão Geral do Projeto
 
-**Daily Fitness** é uma plataforma web que reúne funcionalidades relacionadas à saúde e bem-estar, permitindo que usuários acompanhem desafios, consultem profissionais fitness e gerenciem seu perfil de forma centralizada.
+**Daily Fitness** é uma plataforma web que reúne funcionalidades relacionadas à saúde e bem-estar, permitindo que usuários acompanhem desafios, sigam planos de treino e planos alimentares, consultem profissionais fitness e gerenciem seu perfil de forma centralizada.
 
 **Backend** — API REST construída em .NET 10 com ASP.NET Core, seguindo Clean Architecture. Responsável por autenticação, regras de negócio, persistência e envio de e-mails transacionais.
 
@@ -65,7 +65,7 @@ DailyFitness/
 └── README.md
 ```
 
-> **Nota:** O projeto usa o formato `.slnx` (novo formato de solution do .NET), e não o `.sln` convencional. O comportamento dos comandos `dotnet` é idêntico.
+> **Nota:** O projeto usa o formato `.slnx` (novo formato de solution do .NET). O comportamento dos comandos `dotnet` é idêntico ao `.sln` convencional.
 
 ---
 
@@ -191,14 +191,14 @@ dotnet user-secrets remove "NomeDaChave:SubChave" --project src\backend\DailyFit
 
 ```
 ConnectionStrings:DefaultConnection = Server=localhost;Port=3306;Database=DailyFitness;Uid=root;Pwd=...
-Jwt:Issuer = DailyFitness
-Jwt:Audience = DailyFitnessClient
-Jwt:Secret = chave-secreta-forte-...
-Smtp:Host = smtp.gmail.com
-Smtp:Port = 587
-Smtp:UserName = seu-email@gmail.com
-Smtp:Password = sua-app-password-google
-Smtp:Sender = seu-email@gmail.com
+Jwt:Issuer                          = DailyFitness
+Jwt:Audience                        = DailyFitnessClient
+Jwt:Secret                          = chave-secreta-forte-...
+Smtp:Host                           = smtp.gmail.com
+Smtp:Port                           = 587
+Smtp:UserName                       = seu-email@gmail.com
+Smtp:Password                       = sua-app-password-google
+Smtp:Sender                         = seu-email@gmail.com
 ```
 
 > **Importante:** User Secrets funcionam apenas em ambiente `Development`. Em homologação e produção, use variáveis de ambiente (prefixo `DAILYFITNESS__`), AWS Secrets Manager, Azure Key Vault ou outra solução de gerenciamento de segredos.
@@ -219,11 +219,7 @@ O backend envia e-mails transacionais (boas-vindas, recuperação de senha, noti
 4. Pesquise por **Senhas de app** na barra de pesquisa da conta
 5. Crie uma nova senha de app com nome sugerido: `DailyFitness`
 6. Copie a senha gerada (16 caracteres, sem espaços)
-7. Use essa senha no secret:
-
-```cmd
-dotnet user-secrets set "Smtp:Password" "abcdabcdabcdabcd" --project src\backend\DailyFitness.Api
-```
+7. Use essa senha no secret `Smtp:Password`
 
 ### Referência das configurações SMTP
 
@@ -286,7 +282,7 @@ Após instalar, reinicie o CMD para que o comando seja reconhecido no PATH.
 
 ---
 
-## 8. Aplicação das Migrations Existentes
+## 8. Aplicação das Migrations
 
 As migrations já existem no projeto. **Não crie novas migrations.** O objetivo é apenas aplicar as migrations existentes no banco local.
 
@@ -306,6 +302,10 @@ As migrations já existem no projeto. **Não crie novas migrations.** O objetivo
 | 3 | `20260330004752_AddingPasswordResetRequests` |
 | 4 | `20260330223556_AddingProfessionalRequests` |
 | 5 | `20260427025049_AddingChallenges` |
+| 6 | `20260504003441_AddingCreatedByToChallenges` |
+| 7 | `20260524000000_AddingTrainingPlans` |
+| 8 | `20260524155001_AddingTrainingPlans2` |
+| 9 | `20260524185133_AddingDietPlans` |
 
 ### Comando para aplicar as migrations
 
@@ -326,7 +326,7 @@ SHOW TABLES;
 SELECT MigrationId FROM __EFMigrationsHistory ORDER BY MigrationId;
 ```
 
-Você deve ver 5 entradas na tabela `__EFMigrationsHistory` e as tabelas: `Users`, `LogEmails`, `ResetPasswordRequests`, `ProfessionalRequests`, `Challenges`, `UserChallenges`, `UserChallengeProgresses`.
+Você deve ver 9 entradas na tabela `__EFMigrationsHistory`.
 
 ---
 
@@ -371,8 +371,6 @@ info: Now listening on: http://localhost:5284
 info: Now listening on: https://localhost:7266
 ```
 
-Acesse `http://localhost:5284/DailyFitness/scalar/v1` e confirme que a documentação carrega corretamente.
-
 ---
 
 ## 10. Configuração do Frontend React
@@ -389,11 +387,9 @@ VITE_API_URL=http://localhost:5284
 
 > **Por que `.env.local`?** O Vite carrega este arquivo automaticamente e ele está no `.gitignore` do projeto, garantindo que URLs locais nunca sejam commitadas.
 
-> **Nota técnica:** O arquivo `.env` existente contém `API_URL=...` sem o prefixo `VITE_`. O Vite só expõe ao browser variáveis com prefixo `VITE_`. Por isso, foi necessário um pequeno ajuste no arquivo `api.ts` para usar `VITE_API_URL`. Veja o Resumo Final para detalhes.
-
 ### Variáveis do Supabase
 
-O projeto integra Supabase. As variáveis já estão presentes no `.env` do frontend. Para testes básicos da API .NET local, a configuração do Supabase não é obrigatória.
+O projeto integra Supabase para funcionalidades complementares. As variáveis já estão presentes no `.env` do frontend. Para testes básicos da API .NET local, a configuração do Supabase não é obrigatória.
 
 Se precisar de um projeto Supabase próprio, adicione ao `.env.local`:
 
@@ -440,11 +436,7 @@ http://localhost:8080
 3. No DevTools (F12 → Network), faça login e confirme que as chamadas vão para `http://localhost:5284/DailyFitness/...`
 4. Respostas `200 OK` ou `400 Bad Request` com JSON indicam que a comunicação com a API está funcionando
 
-### Observações
-
-**Reiniciar após alterar `.env.local`:** qualquer alteração no `.env.local` exige reinicialização do `npm run dev`.
-
-**Mixed Content:** o frontend e a API rodam em HTTP em dev local — sem problema de Mixed Content neste cenário.
+> **Atenção:** qualquer alteração no `.env.local` exige reinicialização do `npm run dev`.
 
 ---
 
@@ -460,7 +452,7 @@ net start MySQL80
 dotnet user-secrets list --project src\backend\DailyFitness.Api
 ```
 
-**3. Aplicar as migrations existentes**
+**3. Aplicar as migrations**
 ```cmd
 dotnet ef database update --project src\backend\DailyFitness.Infrastructure --startup-project src\backend\DailyFitness.Api
 ```
@@ -490,34 +482,26 @@ npm run dev
 ```
 
 **8. Criar um usuário pela aplicação**
+
 Acesse `http://localhost:8080`, cadastre um usuário e faça login.
 
 **9. Validar chamadas à API**
+
 No DevTools → Network, confirme respostas JSON com `"success": true`.
 
 ---
 
-## 14. Teste de Rotas Administrativas
+## 14. Perfis de Usuário
 
-Algumas rotas exigem o perfil **Administrator**. Por padrão, todos os usuários são cadastrados com o perfil `General`.
+A plataforma possui três perfis com níveis de acesso distintos:
 
-Para testar rotas administrativas, crie um usuário pela aplicação e depois eleve o perfil diretamente no banco.
-
-### Estrutura da tabela de usuários
-
-| Tabela | Coluna de perfil | Tipo |
+| Valor | Perfil | Descrição |
 |---|---|---|
-| `Users` | `Profile` | `int` (enum) |
+| `0` | `Administrator` | Acesso total à gestão da plataforma |
+| `1` | `General` | Perfil padrão ao cadastrar |
+| `2` | `Professional` | Acesso a funcionalidades de profissionais fitness |
 
-### Valores do enum `EUserProfile`
-
-| Valor | Perfil |
-|---|---|
-| `0` | `Administrator` |
-| `1` | `General` (padrão ao cadastrar) |
-| `2` | `Professional` |
-
-### SQL para promover um usuário a Administrator
+Por padrão, todos os usuários são cadastrados com o perfil `General`. Para testar funcionalidades restritas a outros perfis, eleve o perfil diretamente no banco após criar o usuário pela aplicação:
 
 ```sql
 USE DailyFitness;
@@ -527,107 +511,71 @@ SET Profile = 0
 WHERE Email = 'admin@teste.com';
 ```
 
-Substitua `admin@teste.com` pelo e-mail do usuário que deseja promover.
+Substitua o valor `0` pelo perfil desejado e `admin@teste.com` pelo e-mail do usuário. Após alterar o perfil no banco, faça logout e login novamente para que o novo token JWT reflita o perfil atualizado.
 
-### Recomendação para testes completos
-
-Crie dois usuários e configure-os da seguinte forma:
-
-| Usuário | Perfil | Finalidade |
-|---|---|---|
-| `admin@teste.com` | Administrator (Profile = 0) | Testar rotas administrativas |
-| `usuario@teste.com` | General (Profile = 1) | Testar comportamento padrão |
-
-**Rotas que exigem `Administrator`:**
-- `GET /Challenges` — listar todos os desafios (admin)
-- `GET /Challenges/{id}` — detalhe de desafio (admin)
-- `POST /Challenges` — criar desafio
-- `PUT /Challenges/{id}` — editar desafio
-- `DELETE /Challenges/{id}` — desativar desafio
-- `GET /Challenges/{id}/participants` — participantes
-- `GET /Professionals/get-requests` — listar solicitações de profissional
-- `GET /Professionals/get-requests/{id}` — detalhe de solicitação
-- `POST /Professionals/evaluate-request` — aprovar ou rejeitar
-
-**Rotas abertas (sem autenticação ou para qualquer perfil autenticado):**
-- `POST /Users/register` — cadastro
-- `POST /Users/login` — login
-- `POST /Users/forgot-password` — solicitar reset de senha
-- `POST /Users/reset-password` — redefinir senha
-- `GET /Challenges/available` — desafios disponíveis
-- `POST /Challenges/{id}/join` — participar de desafio
-- `GET /Challenges/my` — meus desafios
-- `GET /Professionals` — listagem de profissionais aprovados
-- `POST /Professionals/create-request` — solicitar perfil profissional
-
-> Após alterar o perfil no banco, faça logout e login novamente para que o novo token JWT reflita o perfil atualizado.
+> A promoção para `Professional` também pode ser feita pelo fluxo de solicitação disponível na própria plataforma, sujeita à aprovação de um `Administrator`.
 
 ---
 
 ## 15. Troubleshooting
 
-### 1. MySQL não conecta
+### MySQL não conecta
 
 - Confirme que o serviço está em execução: `net start MySQL80`
 - Verifique host (`localhost`), porta (`3306`), usuário e senha na connection string
 - Tente conectar via MySQL Workbench para isolar o problema
 - Confirme que o banco `DailyFitness` existe: `SHOW DATABASES;`
 
-### 2. Banco não encontrado
+### Banco não encontrado
 
 - Crie manualmente: `CREATE DATABASE DailyFitness;`
 - Confirme que o nome na connection string corresponde exatamente
 
-### 3. Migration não aplica
+### Migration não aplica
 
 - Confirme que o MySQL está rodando
 - Execute `dotnet user-secrets list --project src\backend\DailyFitness.Api` e verifique se a `DefaultConnection` está configurada
 - Certifique-se de usar `--project` (Infrastructure) e `--startup-project` (Api) juntos no comando
 - Confirme que `dotnet-ef` está instalado: `dotnet ef --version`
 
-### 4. dotnet ef não encontrado
+### dotnet ef não encontrado
 
 ```cmd
 dotnet tool install --global dotnet-ef
 ```
 Reinicie o CMD após instalar.
 
-### 5. Secrets não carregados
+### Secrets não carregados
 
 - Confirme que `ASPNETCORE_ENVIRONMENT=Development` está ativo (verificar `launchSettings.json`)
 - Execute `dotnet user-secrets list --project src\backend\DailyFitness.Api`
 - Certifique-se de ter usado o path correto do projeto de API nos comandos
 
-### 6. JWT inválido / 401 Unauthorized
+### JWT inválido / 401 Unauthorized
 
 - Verifique `Jwt:Issuer` (deve ser `DailyFitness`) e `Jwt:Audience` (deve ser `DailyFitnessClient`)
 - Confirme que o `Jwt:Secret` tem pelo menos 32 caracteres
 - Se alterou os secrets, reinicie o backend e faça login novamente
 
-### 7. SMTP Gmail falhando
+### SMTP Gmail falhando
 
 - Confirme que a verificação em duas etapas está ativa na conta Google
 - Use a senha de app (16 caracteres), nunca a senha normal da conta
 - Verifique: `Smtp:Host = smtp.gmail.com`, `Smtp:Port = 587`
 
-### 8. Frontend chamando URL errada
+### Frontend chamando URL errada
 
 - Confirme que `src\frontend\.env.local` existe com `VITE_API_URL=http://localhost:5284`
 - Reinicie o `npm run dev` após criar ou alterar o `.env.local`
 - No DevTools → Network, inspecione para qual URL as chamadas estão sendo feitas
 
-### 9. Erro de CORS
+### Erro de CORS
 
 - O backend está configurado com `AllowAnyOrigin` em desenvolvimento — CORS não deve ser problema localmente
 - Confirme que o frontend está chamando `http://localhost:5284` (porta correta)
 - Confirme que `ASPNETCORE_ENVIRONMENT=Development` está ativo
 
-### 10. Mixed Content
-
-- Frontend em HTTP (`http://localhost:8080`) chamando API em HTTP (`http://localhost:5284`): sem problema
-- Mixed Content ocorre quando uma página HTTPS carrega recursos de HTTP — em dev local, ambos são HTTP
-
-### 11. Porta já em uso
+### Porta já em uso
 
 ```cmd
 netstat -ano | findstr :5284
@@ -635,7 +583,7 @@ netstat -ano | findstr :8080
 ```
 Identifique o PID e finalize o processo pelo Gerenciador de Tarefas, ou altere as portas nos arquivos de configuração.
 
-### 12. Scalar não carrega
+### Scalar não carrega
 
 - Confirme que `ASPNETCORE_ENVIRONMENT=Development` está ativo
 - Acesse com o prefixo correto: `http://localhost:5284/DailyFitness/scalar/v1`
@@ -645,6 +593,6 @@ Identifique o PID e finalize o processo pelo Gerenciador de Tarefas, ou altere a
 
 ### Pontos que exigem validação manual
 
-- **Senha de app do Gmail** — deve ser gerada pelo desenvolvedor na própria conta Google
+- **Senha de app do Gmail** — deve ser gerada na própria conta Google do desenvolvedor
 - **Credenciais MySQL** — cada desenvolvedor deve ajustar `Uid` e `Pwd` para seu ambiente local
 - **Supabase** — para uso completo da plataforma, pode ser necessário um projeto Supabase próprio com as variáveis `VITE_SUPABASE_*` configuradas no `.env.local`
