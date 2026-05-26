@@ -192,6 +192,11 @@ export interface CancelDietPlanPayload {
 
 export interface MarkDietItemProgressPayload {
   isCompleted: boolean;
+  progressDate?: string; // ISO date string "YYYY-MM-DD"
+}
+
+export interface FinishDietMealDayPayload {
+  progressDate?: string; // ISO date string "YYYY-MM-DD"
 }
 
 // ── API helpers ───────────────────────────────────────────────────────────────
@@ -313,12 +318,16 @@ export async function markDietItemProgress(
   return parseApiResponse<UserDietPlanDto>(res, "markDietItemProgress");
 }
 
-export async function finishDietMealDay(mealId: string): Promise<ApiResponse<UserDietMealDailyLogDto>> {
+export async function finishDietMealDay(
+  mealId: string,
+  payload: FinishDietMealDayPayload = {}
+): Promise<ApiResponse<UserDietMealDailyLogDto>> {
   const res = await fetch(
     `${API_BASE}/dietplans/current/meals/${encodeURIComponent(mealId)}/finish-day`,
     {
       method: "POST",
       headers: HEADERS(),
+      body: JSON.stringify(payload),
     }
   );
   return parseApiResponse<UserDietMealDailyLogDto>(res, "finishDietMealDay");

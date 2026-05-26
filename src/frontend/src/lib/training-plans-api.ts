@@ -333,14 +333,20 @@ export async function markItemProgress(
   return parseApiResponse<UserTrainingPlanDto>(res, "markItemProgress");
 }
 
+export interface FinishWorkoutDayPayload {
+  progressDate?: string; // ISO date string "YYYY-MM-DD"
+}
+
 export async function finishWorkoutDay(
-  workoutId: string
+  workoutId: string,
+  payload: FinishWorkoutDayPayload = {}
 ): Promise<ApiResponse<UserTrainingWorkoutDailyLogDto>> {
   const res = await fetch(
     `${BASE}/current/workouts/${encodeURIComponent(workoutId)}/finish-day`,
     {
       method: "POST",
       headers: HEADERS(),
+      body: JSON.stringify(payload),
     }
   );
   return parseApiResponse<UserTrainingWorkoutDailyLogDto>(res, "finishWorkoutDay");

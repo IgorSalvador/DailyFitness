@@ -34,6 +34,6 @@ public interface ITrainingPlanService
     Task<ResultDto<UserTrainingPlanDto>> GetCurrentPlan(Guid userId, CancellationToken ct);
     Task<ResultDto<UserTrainingPlanDto>> GetCurrentPlanProgress(Guid userId, CancellationToken ct);
     Task<ResultDto<UserTrainingPlanDto>> MarkItemProgress(Guid userId, Guid workoutId, Guid itemId, MarkTrainingItemProgressDto model, CancellationToken ct);
-    Task<ResultDto<UserTrainingWorkoutDailyLogDto>> FinishWorkoutDay(Guid userId, Guid workoutId, CancellationToken ct);
+    Task<ResultDto<UserTrainingWorkoutDailyLogDto>> FinishWorkoutDay(Guid userId, Guid workoutId, FinishWorkoutDayDto model, CancellationToken ct);
     Task<ResultDto<IEnumerable<UserTrainingPlanDto>>> GetHistory(Guid userId, CancellationToken ct);
 }

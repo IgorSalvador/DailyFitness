@@ -284,7 +284,7 @@ public class DietPlanService(
         if (item is null)
             return ResultDto<UserDietPlanDto>.Fail("Falha de validação", ["Item não encontrado nesta refeição."]);
 
-        var today = DateOnly.FromDateTime(DateTime.Now);
+        var today = model.ProgressDate ?? DateOnly.FromDateTime(DateTime.Now);
 
         // Upsert do progresso
         var existing = await userDietProgressRepository.GetByKeyAsync(udp.Id, itemId, today, ct);
@@ -314,7 +314,7 @@ public class DietPlanService(
         return ResultDto<UserDietPlanDto>.Ok(UserDietPlanDto.FromEntity(full!, true), "Progresso registrado com sucesso!");
     }
 
-    public async Task<ResultDto<UserDietMealDailyLogDto>> FinishMealDay(Guid userId, Guid mealId, CancellationToken ct)
+    public async Task<ResultDto<UserDietMealDailyLogDto>> FinishMealDay(Guid userId, Guid mealId, DateOnly? progressDate, CancellationToken ct)
     {
         var udp = await userDietPlanRepository.GetActiveByUserIdAsync(userId, ct);
         if (udp is null)
@@ -324,7 +324,7 @@ public class DietPlanService(
         if (meal is null)
             return ResultDto<UserDietMealDailyLogDto>.Fail("Falha de validação", ["Refeição não encontrada neste plano."]);
 
-        var today = DateOnly.FromDateTime(DateTime.Now);
+        var today = progressDate ?? DateOnly.FromDateTime(DateTime.Now);
         await RecalculateDailyLog(udp.Id, mealId, meal.Items.Count, today, ct);
         await TryCompleteUserDietPlan(udp, ct);
 

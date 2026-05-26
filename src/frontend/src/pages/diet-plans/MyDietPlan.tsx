@@ -72,7 +72,7 @@ export default function MyDietPlan() {
     const key = `${mealId}:${itemId}`;
     setTogglingItem(key);
     try {
-      const res = await markDietItemProgress(mealId, itemId, { isCompleted: completed });
+      const res = await markDietItemProgress(mealId, itemId, { isCompleted: completed, progressDate: todayStr });
       setPlan(res.data ?? null);
       if (completed) toast.success("Item marcado como concluído!");
     } catch {
@@ -85,7 +85,7 @@ export default function MyDietPlan() {
   const handleFinishMeal = async (mealId: string) => {
     setFinishingMeal(mealId);
     try {
-      await finishDietMealDay(mealId);
+      await finishDietMealDay(mealId, { progressDate: todayStr });
       toast.success("Refeição finalizada!");
       await load();
     } catch {

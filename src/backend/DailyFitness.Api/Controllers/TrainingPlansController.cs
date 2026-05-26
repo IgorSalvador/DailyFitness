@@ -105,10 +105,10 @@ public class TrainingPlansController(ITrainingPlanService trainingPlanService) :
     /// Finishes today's workout session when all required items have been completed.
     /// </summary>
     [HttpPost("current/workouts/{workoutId:guid}/finish-day")]
-    public async Task<IActionResult> FinishWorkoutDay(Guid workoutId, CancellationToken ct)
+    public async Task<IActionResult> FinishWorkoutDay(Guid workoutId, FinishWorkoutDayDto model, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.FinishWorkoutDay(userId, workoutId, ct);
+        var result = await trainingPlanService.FinishWorkoutDay(userId, workoutId, model, ct);
         return result.ToActionResult(this);
     }
 

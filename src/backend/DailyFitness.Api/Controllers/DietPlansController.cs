@@ -104,10 +104,10 @@ public class DietPlansController(IDietPlanService dietPlanService) : ControllerB
     /// Finalizes today's session for a specific meal.
     /// </summary>
     [HttpPost("current/meals/{mealId:guid}/finish-day")]
-    public async Task<IActionResult> FinishMealDay(Guid mealId, CancellationToken ct)
+    public async Task<IActionResult> FinishMealDay(Guid mealId, FinishDietMealDayDto model, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await dietPlanService.FinishMealDay(userId, mealId, ct);
+        var result = await dietPlanService.FinishMealDay(userId, mealId, model.ProgressDate, ct);
         return result.ToActionResult(this);
     }
 

@@ -34,6 +34,6 @@ public interface IDietPlanService
     Task<ResultDto<UserDietPlanDto>> GetCurrentPlan(Guid userId, CancellationToken ct);
     Task<ResultDto<UserDietPlanDto>> GetCurrentPlanProgress(Guid userId, CancellationToken ct);
     Task<ResultDto<UserDietPlanDto>> MarkItemProgress(Guid userId, Guid mealId, Guid itemId, MarkDietItemProgressDto model, CancellationToken ct);
-    Task<ResultDto<UserDietMealDailyLogDto>> FinishMealDay(Guid userId, Guid mealId, CancellationToken ct);
+    Task<ResultDto<UserDietMealDailyLogDto>> FinishMealDay(Guid userId, Guid mealId, DateOnly? progressDate, CancellationToken ct);
     Task<ResultDto<IEnumerable<UserDietPlanDto>>> GetHistory(Guid userId, CancellationToken ct);
 }
