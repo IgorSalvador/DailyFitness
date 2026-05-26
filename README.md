@@ -591,17 +591,7 @@ Identifique o PID e finalize o processo pelo Gerenciador de Tarefas, ou altere a
 
 ---
 
-## 16. Segurança e Boas Práticas
-
-- Nunca commite a connection string real, senhas ou tokens em `appsettings.json` ou qualquer arquivo versionado
-- Nunca commite o arquivo `.env.local` — ele está no `.gitignore`
-- Nunca use a senha normal da conta Gmail — utilize exclusivamente a senha de app
-- Use **User Secrets** apenas em desenvolvimento local
-- Em homologação e produção, utilize variáveis de ambiente (prefixo `DAILYFITNESS__`), AWS Secrets Manager, Azure Key Vault ou solução equivalente
-- Use um **JWT Secret forte e diferente** para cada ambiente (dev, hom, prod)
-- O CORS está configurado como `AllowAnyOrigin` em desenvolvimento — restrinja as origens permitidas antes de qualquer deploy em produção
-
-### Pontos que exigem configuração manual por desenvolvedor
+### Pontos que exigem validação manual
 
 - **Senha de app do Gmail** — deve ser gerada na própria conta Google do desenvolvedor
 - **Credenciais MySQL** — cada desenvolvedor deve ajustar `Uid` e `Pwd` para seu ambiente local
