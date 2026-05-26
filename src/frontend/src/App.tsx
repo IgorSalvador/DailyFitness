@@ -36,6 +36,13 @@ import TrainingPlanHistory from "./pages/training-plans/TrainingPlanHistory.tsx"
 import ManagementTrainingPlansList from "./pages/training-plans/management/ManagementTrainingPlansList.tsx";
 import ManagementTrainingPlanForm from "./pages/training-plans/management/ManagementTrainingPlanForm.tsx";
 import ManagementTrainingPlanDetail from "./pages/training-plans/management/ManagementTrainingPlanDetail.tsx";
+import DietPlansList from "./pages/diet-plans/DietPlansList.tsx";
+import DietPlanDetail from "./pages/diet-plans/DietPlanDetail.tsx";
+import MyDietPlan from "./pages/diet-plans/MyDietPlan.tsx";
+import DietPlanHistory from "./pages/diet-plans/DietPlanHistory.tsx";
+import ManagementDietPlansList from "./pages/diet-plans/management/ManagementDietPlansList.tsx";
+import ManagementDietPlanForm from "./pages/diet-plans/management/ManagementDietPlanForm.tsx";
+import ManagementDietPlanDetail from "./pages/diet-plans/management/ManagementDietPlanDetail.tsx";
 
 const queryClient = new QueryClient();
 
@@ -291,6 +298,108 @@ const App = () => (
             element={
               <RoleProtectedRoute allowedRoles={["Professional"]}>
                 <ManagementTrainingPlanForm />
+              </RoleProtectedRoute>
+            }
+          />
+
+          {/* Planos Alimentares — User */}
+          <Route
+            path="/dieta"
+            element={
+              <ProtectedRoute>
+                <DietPlansList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dieta/meu-plano"
+            element={
+              <ProtectedRoute>
+                <MyDietPlan />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dieta/historico"
+            element={
+              <ProtectedRoute>
+                <DietPlanHistory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dieta/:id"
+            element={
+              <ProtectedRoute>
+                <DietPlanDetail />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Planos Alimentares — Admin */}
+          <Route
+            path="/dieta/gestao"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ManagementDietPlansList />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/dieta/gestao/criar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ManagementDietPlanForm />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/dieta/gestao/:id"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ManagementDietPlanDetail />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/dieta/gestao/:id/editar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Administrator"]}>
+                <ManagementDietPlanForm />
+              </RoleProtectedRoute>
+            }
+          />
+
+          {/* Planos Alimentares — Professional */}
+          <Route
+            path="/dieta/profissional"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ManagementDietPlansList />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/dieta/profissional/criar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ManagementDietPlanForm />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/dieta/profissional/:id"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ManagementDietPlanDetail />
+              </RoleProtectedRoute>
+            }
+          />
+          <Route
+            path="/dieta/profissional/:id/editar"
+            element={
+              <RoleProtectedRoute allowedRoles={["Professional"]}>
+                <ManagementDietPlanForm />
               </RoleProtectedRoute>
             }
           />

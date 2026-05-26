@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using DailyFitness.Api.Common.Extensions;
-using DailyFitness.Application.Dtos.TrainingPlan;
+using DailyFitness.Application.Dtos.DietPlan;
 using DailyFitness.Application.Interfaces.Services;
 using DailyFitness.Domain.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
@@ -9,199 +9,198 @@ using Microsoft.AspNetCore.Mvc;
 namespace DailyFitness.Api.Controllers;
 
 /// <summary>
-/// Controller responsible for training plan operations available to regular users.
+/// Controller responsible for diet plan operations.
 /// </summary>
 [ApiController, Authorize]
 [Route("[controller]")]
-public class TrainingPlansController(ITrainingPlanService trainingPlanService) : ControllerBase
+public class DietPlansController(IDietPlanService dietPlanService) : ControllerBase
 {
     // ── Public listing ────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Lists all active training plans. Optional filters: objective and level.
+    /// Lists all active diet plans. Optional filters: objective and level.
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAvailablePlans(
-        [FromQuery] ETrainingObjective? objective,
-        [FromQuery] ETrainingLevel? level,
+        [FromQuery] EDietObjective? objective,
+        [FromQuery] EDietLevel? level,
         CancellationToken ct)
     {
-        var result = await trainingPlanService.GetAvailablePlans(objective, level, ct);
+        var result = await dietPlanService.GetAvailablePlans(objective, level, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Retrieves details of a specific training plan.
+    /// Retrieves details of a specific diet plan.
     /// </summary>
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetPlanDetail(Guid id, CancellationToken ct)
     {
-        var result = await trainingPlanService.GetPlanDetail(id, ct);
+        var result = await dietPlanService.GetPlanDetail(id, ct);
         return result.ToActionResult(this);
     }
 
     // ── Subscription ──────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Subscribes the authenticated user to a training plan.
+    /// Subscribes the authenticated user to a diet plan.
     /// The user must not have another active plan.
     /// </summary>
     [HttpPost("{id:guid}/subscribe")]
     public async Task<IActionResult> SubscribePlan(Guid id, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.SubscribePlan(id, userId, ct);
+        var result = await dietPlanService.SubscribePlan(id, userId, ct);
         return result.ToActionResult(this);
     }
 
     // ── Current Plan ──────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Retrieves the authenticated user's currently active training plan.
+    /// Retrieves the authenticated user's currently active diet plan.
     /// </summary>
     [HttpGet("current")]
     public async Task<IActionResult> GetCurrentPlan(CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.GetCurrentPlan(userId, ct);
+        var result = await dietPlanService.GetCurrentPlan(userId, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Retrieves progress details of the authenticated user's active plan.
+    /// Retrieves progress details of the authenticated user's active diet plan.
     /// </summary>
     [HttpGet("current/progress")]
     public async Task<IActionResult> GetCurrentPlanProgress(CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.GetCurrentPlanProgress(userId, ct);
+        var result = await dietPlanService.GetCurrentPlanProgress(userId, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Cancels the authenticated user's active plan subscription, preserving history.
+    /// Cancels the authenticated user's active diet plan subscription, preserving history.
     /// </summary>
     [HttpPost("current/cancel")]
-    public async Task<IActionResult> CancelSubscription(CancelTrainingPlanDto model, CancellationToken ct)
+    public async Task<IActionResult> CancelSubscription(CancelDietPlanDto model, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.CancelSubscription(userId, model, ct);
+        var result = await dietPlanService.CancelSubscription(userId, model, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Marks a workout item as completed for the current day.
-    /// Prevents duplicate marking of the same item on the same day.
+    /// Marks a meal item as completed or incomplete for the current day.
     /// </summary>
-    [HttpPost("current/workouts/{workoutId:guid}/items/{itemId:guid}/complete")]
-    public async Task<IActionResult> MarkItemProgress(Guid workoutId, Guid itemId, MarkTrainingItemProgressDto model, CancellationToken ct)
+    [HttpPost("current/meals/{mealId:guid}/items/{itemId:guid}/complete")]
+    public async Task<IActionResult> MarkItemProgress(Guid mealId, Guid itemId, MarkDietItemProgressDto model, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.MarkItemProgress(userId, workoutId, itemId, model, ct);
+        var result = await dietPlanService.MarkItemProgress(userId, mealId, itemId, model, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Finishes today's workout session when all required items have been completed.
+    /// Finalizes today's session for a specific meal.
     /// </summary>
-    [HttpPost("current/workouts/{workoutId:guid}/finish-day")]
-    public async Task<IActionResult> FinishWorkoutDay(Guid workoutId, FinishWorkoutDayDto model, CancellationToken ct)
+    [HttpPost("current/meals/{mealId:guid}/finish-day")]
+    public async Task<IActionResult> FinishMealDay(Guid mealId, FinishDietMealDayDto model, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.FinishWorkoutDay(userId, workoutId, model, ct);
+        var result = await dietPlanService.FinishMealDay(userId, mealId, model.ProgressDate, ct);
         return result.ToActionResult(this);
     }
 
     // ── History ───────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Returns the full training plan history of the authenticated user (active, cancelled, completed).
+    /// Returns the full diet plan history of the authenticated user.
     /// </summary>
     [HttpGet("history")]
     public async Task<IActionResult> GetHistory(CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.GetHistory(userId, ct);
+        var result = await dietPlanService.GetHistory(userId, ct);
         return result.ToActionResult(this);
     }
 
     // ── Admin — Management ────────────────────────────────────────────────────
 
     /// <summary>
-    /// Lists all training plans. Restricted to administrators.
+    /// Lists all diet plans. Restricted to administrators.
     /// </summary>
     [Authorize(Roles = "Administrator")]
     [HttpGet("management")]
     public async Task<IActionResult> GetAllPlans(CancellationToken ct)
     {
-        var result = await trainingPlanService.GetAllPlans(ct);
+        var result = await dietPlanService.GetAllPlans(ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Retrieves a specific training plan with full details. Restricted to administrators.
+    /// Retrieves a specific diet plan with full details. Restricted to administrators.
     /// </summary>
     [Authorize(Roles = "Administrator")]
     [HttpGet("management/{id:guid}")]
     public async Task<IActionResult> GetPlan(Guid id, CancellationToken ct)
     {
-        var result = await trainingPlanService.GetPlan(id, ct);
+        var result = await dietPlanService.GetPlan(id, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Creates a new training plan. Restricted to administrators.
+    /// Creates a new diet plan. Restricted to administrators.
     /// </summary>
     [Authorize(Roles = "Administrator")]
     [HttpPost("management")]
-    public async Task<IActionResult> CreatePlan(CreateTrainingPlanDto model, CancellationToken ct)
+    public async Task<IActionResult> CreatePlan(CreateDietPlanDto model, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.CreatePlan(model, userId, ct);
+        var result = await dietPlanService.CreatePlan(model, userId, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Updates a training plan. Restricted to administrators.
+    /// Updates a diet plan. Restricted to administrators.
     /// </summary>
     [Authorize(Roles = "Administrator")]
     [HttpPut("management/{id:guid}")]
-    public async Task<IActionResult> UpdatePlan(Guid id, UpdateTrainingPlanDto model, CancellationToken ct)
+    public async Task<IActionResult> UpdatePlan(Guid id, UpdateDietPlanDto model, CancellationToken ct)
     {
-        var result = await trainingPlanService.UpdatePlan(id, model, ct);
+        var result = await dietPlanService.UpdatePlan(id, model, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Activates a training plan. Restricted to administrators.
+    /// Activates a diet plan. Restricted to administrators.
     /// </summary>
     [Authorize(Roles = "Administrator")]
     [HttpPatch("management/{id:guid}/activate")]
     public async Task<IActionResult> ActivatePlan(Guid id, CancellationToken ct)
     {
-        var result = await trainingPlanService.ActivatePlan(id, ct);
+        var result = await dietPlanService.ActivatePlan(id, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Deactivates a training plan. Restricted to administrators.
+    /// Deactivates a diet plan. Restricted to administrators.
     /// </summary>
     [Authorize(Roles = "Administrator")]
     [HttpPatch("management/{id:guid}/deactivate")]
     public async Task<IActionResult> DeactivatePlan(Guid id, CancellationToken ct)
     {
-        var result = await trainingPlanService.DeactivatePlan(id, ct);
+        var result = await dietPlanService.DeactivatePlan(id, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Lists all subscribers of a training plan. Restricted to administrators.
+    /// Lists all subscribers of a diet plan. Restricted to administrators.
     /// </summary>
     [Authorize(Roles = "Administrator")]
     [HttpGet("management/{id:guid}/subscribers")]
     public async Task<IActionResult> GetPlanSubscribers(Guid id, CancellationToken ct)
     {
-        var result = await trainingPlanService.GetPlanSubscribers(id, ct);
+        var result = await dietPlanService.GetPlanSubscribers(id, ct);
         return result.ToActionResult(this);
     }
 
@@ -212,21 +211,21 @@ public class TrainingPlansController(ITrainingPlanService trainingPlanService) :
     [HttpGet("management/{id:guid}/subscribers/{userId:guid}/progress")]
     public async Task<IActionResult> GetSubscriberProgress(Guid id, Guid userId, CancellationToken ct)
     {
-        var result = await trainingPlanService.GetSubscriberProgress(id, userId, ct);
+        var result = await dietPlanService.GetSubscriberProgress(id, userId, ct);
         return result.ToActionResult(this);
     }
 
-    // ── Professional — Management ──────────────────────────────────────────────
+    // ── Professional — Management ─────────────────────────────────────────────
 
     /// <summary>
-    /// Lists all training plans created by the authenticated professional.
+    /// Lists all diet plans created by the authenticated professional.
     /// </summary>
     [Authorize(Roles = "Professional")]
     [HttpGet("managed")]
     public async Task<IActionResult> GetManagedPlans(CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.GetManagedPlans(userId, ct);
+        var result = await dietPlanService.GetManagedPlans(userId, ct);
         return result.ToActionResult(this);
     }
 
@@ -238,31 +237,31 @@ public class TrainingPlansController(ITrainingPlanService trainingPlanService) :
     public async Task<IActionResult> GetManagedPlan(Guid id, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.GetManagedPlan(id, userId, ct);
+        var result = await dietPlanService.GetManagedPlan(id, userId, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Creates a new training plan as the authenticated professional.
+    /// Creates a new diet plan as the authenticated professional.
     /// </summary>
     [Authorize(Roles = "Professional")]
     [HttpPost("managed")]
-    public async Task<IActionResult> CreateManagedPlan(CreateTrainingPlanDto model, CancellationToken ct)
+    public async Task<IActionResult> CreateManagedPlan(CreateDietPlanDto model, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.CreateManagedPlan(model, userId, ct);
+        var result = await dietPlanService.CreateManagedPlan(model, userId, ct);
         return result.ToActionResult(this);
     }
 
     /// <summary>
-    /// Updates a training plan created by the authenticated professional.
+    /// Updates a diet plan created by the authenticated professional.
     /// </summary>
     [Authorize(Roles = "Professional")]
     [HttpPut("managed/{id:guid}")]
-    public async Task<IActionResult> UpdateManagedPlan(Guid id, UpdateTrainingPlanDto model, CancellationToken ct)
+    public async Task<IActionResult> UpdateManagedPlan(Guid id, UpdateDietPlanDto model, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.UpdateManagedPlan(id, model, userId, ct);
+        var result = await dietPlanService.UpdateManagedPlan(id, model, userId, ct);
         return result.ToActionResult(this);
     }
 
@@ -274,7 +273,7 @@ public class TrainingPlansController(ITrainingPlanService trainingPlanService) :
     public async Task<IActionResult> ActivateManagedPlan(Guid id, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.ActivateManagedPlan(id, userId, ct);
+        var result = await dietPlanService.ActivateManagedPlan(id, userId, ct);
         return result.ToActionResult(this);
     }
 
@@ -286,7 +285,7 @@ public class TrainingPlansController(ITrainingPlanService trainingPlanService) :
     public async Task<IActionResult> DeactivateManagedPlan(Guid id, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.DeactivateManagedPlan(id, userId, ct);
+        var result = await dietPlanService.DeactivateManagedPlan(id, userId, ct);
         return result.ToActionResult(this);
     }
 
@@ -298,7 +297,7 @@ public class TrainingPlansController(ITrainingPlanService trainingPlanService) :
     public async Task<IActionResult> GetManagedPlanSubscribers(Guid id, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.GetManagedPlanSubscribers(id, userId, ct);
+        var result = await dietPlanService.GetManagedPlanSubscribers(id, userId, ct);
         return result.ToActionResult(this);
     }
 
@@ -310,7 +309,7 @@ public class TrainingPlansController(ITrainingPlanService trainingPlanService) :
     public async Task<IActionResult> GetManagedSubscriberProgress(Guid id, Guid subscriberUserId, CancellationToken ct)
     {
         var userId = GetUserId();
-        var result = await trainingPlanService.GetManagedSubscriberProgress(id, subscriberUserId, userId, ct);
+        var result = await dietPlanService.GetManagedSubscriberProgress(id, subscriberUserId, userId, ct);
         return result.ToActionResult(this);
     }
 

@@ -22,6 +22,6 @@ public sealed class ResultDto<T>
     public static ResultDto<T> Ok(T data, string? message = null)
         => new(true, data, message);
 
-    public static ResultDto<T> Fail(string? message = null, List<string>? errors = null)
-        => new (false, message, errors);
+    public static ResultDto<T> Fail(string? message = null, IEnumerable<string>? errors = null)
+        => new (false, message, errors?.ToList());
 }

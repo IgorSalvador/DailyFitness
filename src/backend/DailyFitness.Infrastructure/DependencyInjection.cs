@@ -54,6 +54,10 @@ public static class DependencyInjection
             services.AddScoped<IUserTrainingPlanRepository, UserTrainingPlanRepository>();
             services.AddScoped<IUserTrainingProgressRepository, UserTrainingProgressRepository>();
             services.AddScoped<IUserTrainingWorkoutDailyLogRepository, UserTrainingWorkoutDailyLogRepository>();
+            services.AddScoped<IDietPlanRepository, DietPlanRepository>();
+            services.AddScoped<IUserDietPlanRepository, UserDietPlanRepository>();
+            services.AddScoped<IUserDietProgressRepository, UserDietProgressRepository>();
+            services.AddScoped<IUserDietMealDailyLogRepository, UserDietMealDailyLogRepository>();
         }
     }
 }

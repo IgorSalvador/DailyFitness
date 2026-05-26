@@ -37,6 +37,8 @@ const adminDropdown: NavDropdownConfig = {
   items: [
     { label: "Solicitações", icon: ClipboardList, href: "/profissionais/admin/solicitacoes" },
     { label: "Desafios", icon: Trophy, href: "/desafios/admin" },
+    { label: "Planos de Treino", icon: Dumbbell, href: "/treinos/gestao" },
+    { label: "Planos Alimentares", icon: Utensils, href: "/dieta/gestao" },
   ],
 };
 
@@ -45,6 +47,8 @@ const professionalDropdown: NavDropdownConfig = {
   icon: Sparkles,
   items: [
     { label: "Meus Desafios", icon: Trophy, href: "/desafios/profissional" },
+    { label: "Meus Treinos", icon: Dumbbell, href: "/treinos/profissional" },
+    { label: "Minhas Dietas", icon: Utensils, href: "/dieta/profissional" },
   ],
 };
 

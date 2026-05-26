@@ -80,7 +80,7 @@ const MyTrainingPlan = () => {
   const handleFinishDay = async (workoutId: string) => {
     setLoadingWorkoutFinish(workoutId);
     try {
-      await finishWorkoutDay(workoutId);
+      await finishWorkoutDay(workoutId, { progressDate: todayDate });
       toast.success("Treino do dia finalizado!");
       load();
     } catch (err) {

@@ -312,7 +312,7 @@ public class TrainingPlanService(
         return ResultDto<UserTrainingPlanDto>.Ok(UserTrainingPlanDto.FromEntity(full!), "Progresso registrado com sucesso!");
     }
 
-    public async Task<ResultDto<UserTrainingWorkoutDailyLogDto>> FinishWorkoutDay(Guid userId, Guid workoutId, CancellationToken ct)
+    public async Task<ResultDto<UserTrainingWorkoutDailyLogDto>> FinishWorkoutDay(Guid userId, Guid workoutId, FinishWorkoutDayDto model, CancellationToken ct)
     {
         var utp = await userTrainingPlanRepository.GetActiveByUser(userId, ct);
         if (utp is null)
@@ -322,7 +322,7 @@ public class TrainingPlanService(
         if (workout is null)
             return ResultDto<UserTrainingWorkoutDailyLogDto>.Fail("Falha de validação", ["Treino não encontrado neste plano."]);
 
-        var today = DateTime.Now.Date;
+        var today = (model.ProgressDate ?? DateTime.Now).Date;
         var log = await userTrainingWorkoutDailyLogRepository.GetByPlanWorkoutAndDate(utp.Id, workoutId, today, ct);
 
         if (log is null)
