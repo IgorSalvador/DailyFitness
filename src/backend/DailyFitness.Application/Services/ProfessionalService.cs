@@ -44,11 +44,8 @@ public class ProfessionalService(
         var professionalRequest = model.ToEntity();
 
         var existingRequests =
-            await professionalRequestRepository.Find(x => x.UserId == professionalRequest.UserId
-                                                          && x.ProfessionalRequestStatus ==
-                                                          EProfessionalRequestStatus.Pending
-                                                          || x.ProfessionalRequestStatus ==
-                                                          EProfessionalRequestStatus.Approved
+            await professionalRequestRepository.Find(x => x.UserId == professionalRequest.UserId &&
+                                                          (x.ProfessionalRequestStatus == EProfessionalRequestStatus.Pending || x.ProfessionalRequestStatus == EProfessionalRequestStatus.Approved)
                 , cancellationToken);
 
         if (existingRequests.Any())
